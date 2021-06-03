@@ -287,11 +287,10 @@ open class FDialog : IDialog {
         if (_tryStartShowAnimator) {
             val width = _dialogView.containerView.width
             val height = _dialogView.containerView.height
-            if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height}")
-            }
-
             if (width > 0 && height > 0) {
+                if (isDebug) {
+                    Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height}")
+                }
                 setTryStartShowAnimator(false)
                 _animatorHandler.setShowAnimator(createAnimator(true))
                 _animatorHandler.startShowAnimator()
