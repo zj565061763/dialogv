@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.app.Activity
+import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.graphics.Color
@@ -750,7 +751,7 @@ open class FDialog : IDialog {
 
     private inner class InternalActivityLifecycleCallbacks : ActivityLifecycleCallbacks {
         fun register(register: Boolean) {
-            val application = ownerActivity.application
+            val application = context.applicationContext as Application
             application.unregisterActivityLifecycleCallbacks(this)
             if (register) {
                 application.registerActivityLifecycleCallbacks(this)
