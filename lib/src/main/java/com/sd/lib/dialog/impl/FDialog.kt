@@ -693,17 +693,10 @@ open class FDialog : IDialog {
             Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator}")
         }
 
-        try {
-            val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
-            container.removeView(_dialogView)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            if (isDebug) {
-                Log.e(IDialog::class.java.simpleName, "dismissDialog error:${e}")
-            }
-        } finally {
-            setState(State.Dismissed)
-        }
+        val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
+        container.removeView(_dialogView)
+
+        setState(State.Dismissed)
     }
 
     private fun notifyStart() {
