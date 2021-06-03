@@ -1,0 +1,3 @@
+rootProject.name = "dialogv"
+include ':app'
+include ':lib'

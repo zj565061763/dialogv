@@ -1,0 +1,238 @@
+package com.sd.lib.dialog.impl
+
+import android.util.Log
+import android.view.View
+import com.sd.lib.dialog.IDialog
+import com.sd.lib.dialog.ITargetDialog
+import com.sd.lib.dialog.animator.AnimatorCreator
+import com.sd.lib.dialog.animator.PivotPercentCreator
+import com.sd.lib.dialog.animator.ScaleXYCreator
+import com.sd.lib.viewtracker.FViewTracker
+import com.sd.lib.viewtracker.ViewTracker
+import com.sd.lib.viewupdater.ViewUpdater
+import com.sd.lib.viewupdater.impl.OnGlobalLayoutChangeUpdater
+
+internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog {
+    private var _position: ITargetDialog.Position? = null
+    private var _marginX = 0
+    private var _marginY = 0
+
+    private val _dialogBackup by lazy { DialogBackup() }
+    private var _modifyAnimatorCreator: AnimatorCreator? = null
+
+    override fun setMarginX(margin: Int): ITargetDialog {
+        _marginX = margin
+        return this
+    }
+
+    override fun setMarginY(margin: Int): ITargetDialog {
+        _marginY = margin
+        return this
+    }
+
+    override fun show(target: View?, position: ITargetDialog.Position) {
+        _position = position
+
+        val contentView = _dialog.getContentView()
+        _viewTracker.source = contentView
+        _viewTracker.target = target
+        _viewUpdater.view = contentView
+
+        _dialog.show()
+    }
+
+    private val _viewUpdater: ViewUpdater by lazy {
+        object : OnGlobalLayoutChangeUpdater() {
+            override fun onStateChanged(started: Boolean) {
+                super.onStateChanged(started)
+                if (started) {
+                    _dialogBackup.backup(_dialog)
+                } else {
+                    _dialogBackup.restore(_dialog)
+                }
+            }
+        }.also {
+            it.setUpdatable {
+                _viewTracker.update()
+            }
+        }
+    }
+
+    private val _viewTracker: ViewTracker by lazy {
+        FViewTracker().also {
+            it.setCallback(object : ViewTracker.Callback() {
+                override fun canUpdate(source: View?, target: View?): Boolean {
+                    return target != null && source != null && source.width > 0 && source.height > 0
+                }
+
+                override fun onUpdate(x: Int, y: Int, source: View, target: View) {
+                    var finalX = x + _marginX
+                    var finalY = y + _marginY
+                    when (_position) {
+                        ITargetDialog.Position.LeftOutside,
+                        ITargetDialog.Position.LeftOutsideTop,
+                        ITargetDialog.Position.LeftOutsideCenter,
+                        ITargetDialog.Position.LeftOutsideBottom -> {
+                            finalX -= source.width
+                        }
+
+                        ITargetDialog.Position.RightOutside,
+                        ITargetDialog.Position.RightOutsideTop,
+                        ITargetDialog.Position.RightOutsideCenter,
+                        ITargetDialog.Position.RightOutsideBottom -> {
+                            finalX += source.width
+                        }
+
+                        ITargetDialog.Position.TopOutside,
+                        ITargetDialog.Position.TopOutsideLeft,
+                        ITargetDialog.Position.TopOutsideCenter,
+                        ITargetDialog.Position.TopOutsideRight -> {
+                            finalY -= source.height
+                        }
+
+                        ITargetDialog.Position.BottomOutside,
+                        ITargetDialog.Position.BottomOutsideLeft,
+                        ITargetDialog.Position.BottomOutsideCenter,
+                        ITargetDialog.Position.BottomOutsideRight -> {
+                            finalY += source.height
+                        }
+                    }
+
+                    val sourceParent = source.parent as View
+                    val left = finalX
+                    val top = finalY
+                    val right = sourceParent.width - finalX - source.width
+                    val bottom = sourceParent.height - finalY - source.height
+
+                    Log.i(SimpleTargetDialog::class.java.simpleName, "${left},${top},${right},${bottom}")
+
+                    _dialog.setPadding(left, top, right, bottom)
+                    source.offsetLeftAndRight(finalX - source.left)
+                    source.offsetTopAndBottom(finalY - source.top)
+                }
+            })
+        }
+    }
+
+    fun onStart() {
+        val isReady = _viewTracker.source != null && _viewTracker.target != null && _position != null
+        if (!isReady) return
+
+        when (_position) {
+            ITargetDialog.Position.LeftOutside -> {
+                _viewTracker.setPosition(ViewTracker.Position.Left)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.5f))
+            }
+            ITargetDialog.Position.LeftOutsideTop -> {
+                _viewTracker.setPosition(ViewTracker.Position.TopLeft)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.0f))
+            }
+            ITargetDialog.Position.LeftOutsideCenter -> {
+                _viewTracker.setPosition(ViewTracker.Position.LeftCenter)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.5f))
+            }
+            ITargetDialog.Position.LeftOutsideBottom -> {
+                _viewTracker.setPosition(ViewTracker.Position.BottomLeft)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 1.0f))
+            }
+            ITargetDialog.Position.TopOutside -> {
+                _viewTracker.setPosition(ViewTracker.Position.Top)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.5f, 1.0f))
+            }
+            ITargetDialog.Position.TopOutsideLeft -> {
+                _viewTracker.setPosition(ViewTracker.Position.TopLeft)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 1.0f))
+            }
+            ITargetDialog.Position.TopOutsideCenter -> {
+                _viewTracker.setPosition(ViewTracker.Position.TopCenter)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.5f, 1.0f))
+            }
+            ITargetDialog.Position.TopOutsideRight -> {
+                _viewTracker.setPosition(ViewTracker.Position.TopRight)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 1.0f))
+            }
+            ITargetDialog.Position.RightOutside -> {
+                _viewTracker.setPosition(ViewTracker.Position.Right)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 0.5f))
+            }
+            ITargetDialog.Position.RightOutsideTop -> {
+                _viewTracker.setPosition(ViewTracker.Position.TopRight)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 0.0f))
+            }
+            ITargetDialog.Position.RightOutsideCenter -> {
+                _viewTracker.setPosition(ViewTracker.Position.RightCenter)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 0.5f))
+            }
+            ITargetDialog.Position.RightOutsideBottom -> {
+                _viewTracker.setPosition(ViewTracker.Position.BottomRight)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 1.0f))
+            }
+            ITargetDialog.Position.BottomOutside -> {
+                _viewTracker.setPosition(ViewTracker.Position.Bottom)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.5f, 0.0f))
+            }
+            ITargetDialog.Position.BottomOutsideLeft -> {
+                _viewTracker.setPosition(ViewTracker.Position.BottomLeft)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 0.0f))
+            }
+            ITargetDialog.Position.BottomOutsideCenter -> {
+                _viewTracker.setPosition(ViewTracker.Position.BottomCenter)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.5f, 0.0f))
+            }
+            ITargetDialog.Position.BottomOutsideRight -> {
+                _viewTracker.setPosition(ViewTracker.Position.BottomRight)
+                setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.0f))
+            }
+        }
+        _viewUpdater.start()
+    }
+
+    fun onStop() {
+        _viewUpdater.stop()
+        _viewTracker.source = null
+        _viewTracker.target = null
+        _position = null
+        restoreAnimator()
+    }
+
+    private fun setDefaultAnimator(creator: AnimatorCreator) {
+        if (_dialog.animatorCreator == null) {
+            _dialog.animatorCreator = creator
+            _modifyAnimatorCreator = creator
+        }
+    }
+
+    private fun restoreAnimator() {
+        if (_modifyAnimatorCreator != null && _modifyAnimatorCreator === _dialog.animatorCreator) {
+            _dialog.animatorCreator = null
+        }
+    }
+}
+
+private class DialogBackup {
+    private var _paddingLeft = 0
+    private var _paddingTop = 0
+    private var _paddingRight = 0
+    private var _paddingBottom = 0
+    private var _gravity = 0
+
+    private var _hasBackup = false
+
+    fun backup(dialog: IDialog) {
+        _paddingLeft = dialog.paddingLeft
+        _paddingTop = dialog.paddingTop
+        _paddingRight = dialog.paddingRight
+        _paddingBottom = dialog.paddingBottom
+        _gravity = dialog.gravity
+
+        _hasBackup = true
+    }
+
+    fun restore(dialog: IDialog) {
+        if (_hasBackup) {
+            _hasBackup = false
+            dialog.setPadding(_paddingLeft, _paddingTop, _paddingRight, _paddingBottom)
+            dialog.gravity = _gravity
+        }
+    }
+}
