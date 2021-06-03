@@ -429,8 +429,9 @@ open class FDialog : IDialog {
         }
 
         if (isDebug) {
-            val showOrDismiss = if (show) "show" else "dismiss"
-            Log.i(IDialog::class.java.simpleName, "createAnimator ${showOrDismiss} animator ${animator}")
+            val textIsShow = if (show) "show" else "dismiss"
+            val textIsNull = if (animator == null) "null" else "not null"
+            Log.i(IDialog::class.java.simpleName, "createAnimator ${textIsShow} ${textIsNull}")
         }
         return animator
     }
