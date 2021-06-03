@@ -6,11 +6,12 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <Button
+    <TextView
         android:id="@+id/btn"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="?attr/colorSecondary"
+        android:background="#FF0000"
+        android:gravity="center"
         android:text="pop"
         android:textAllCaps="false"
         android:textColor="@android:color/white" />
