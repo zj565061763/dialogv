@@ -679,20 +679,13 @@ open class FDialog : IDialog {
             Log.e(IDialog::class.java.simpleName, "showDialog")
         }
 
-        try {
-            val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
-            container.addView(
-                _dialogView,
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            )
-            setState(State.Shown)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            if (isDebug) {
-                Log.e(IDialog::class.java.simpleName, "showDialog error:${e}")
-            }
-            dismissDialog(false)
-        }
+        val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
+        container.addView(
+            _dialogView,
+            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        )
+
+        setState(State.Shown)
     }
 
     private fun dismissDialog(isAnimator: Boolean) {
