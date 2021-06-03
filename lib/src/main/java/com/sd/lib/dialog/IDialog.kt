@@ -32,6 +32,11 @@ interface IDialog {
     var gravity: Int
 
     /**
+     * 窗口显示对象
+     */
+    var displayer: Displayer
+
+    /**
      * 返回窗口的内容view
      */
     fun getContentView(): View?
@@ -151,5 +156,17 @@ interface IDialog {
          * 显示后回调
          */
         fun onShow(dialog: IDialog)
+    }
+
+    interface Displayer {
+        /**
+         * 显示窗口
+         */
+        fun showDialog(view: View)
+
+        /**
+         * 关闭窗口
+         */
+        fun dismissDialog(view: View)
     }
 }

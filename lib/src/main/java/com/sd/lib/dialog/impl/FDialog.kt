@@ -19,6 +19,7 @@ import com.sd.lib.dialog.IDialog
 import com.sd.lib.dialog.ITargetDialog
 import com.sd.lib.dialog.R
 import com.sd.lib.dialog.animator.*
+import com.sd.lib.dialog.displayer.ActivityDisplayer
 
 open class FDialog : IDialog {
     private val _activity: Activity
@@ -140,6 +141,8 @@ open class FDialog : IDialog {
         set(value) {
             _dialogView.containerView.gravity = value
         }
+
+    override var displayer: IDialog.Displayer = ActivityDisplayer()
 
     override fun setAnimatorDuration(duration: Long) {
         _animatorDuration = duration
@@ -696,12 +699,7 @@ open class FDialog : IDialog {
             Log.e(IDialog::class.java.simpleName, "showDialog")
         }
 
-        val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
-        container.addView(
-            _dialogView,
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        )
-
+        displayer.showDialog(_dialogView)
         setState(State.Shown)
     }
 
@@ -709,11 +707,9 @@ open class FDialog : IDialog {
         if (isDebug) {
             Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator}")
         }
+
         stopDismissRunnable()
-
-        val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
-        container.removeView(_dialogView)
-
+        displayer.dismissDialog(_dialogView)
         setState(State.Dismissed)
     }
 
