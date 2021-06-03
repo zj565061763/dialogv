@@ -11,6 +11,8 @@ import com.sd.demo.dialog.databinding.ActivityMainBinding;
 import com.sd.lib.dialog.IDialog;
 import com.sd.lib.dialog.animator.SlideTopBottomParentCreator;
 import com.sd.lib.dialog.impl.FDialog;
+import com.sd.lib.systemui.statusbar.FStatusBar;
+import com.sd.lib.systemui.statusbar.FStatusBarUtils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -22,6 +24,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         _binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(_binding.getRoot());
+
+        FStatusBar.of(this).setDefaultConfig(new FStatusBar.Config() {
+            @Override
+            public FStatusBar.Brightness getStatusBarBrightness() {
+                return FStatusBar.Brightness.light;
+            }
+        });
+        FStatusBarUtils.setTransparent(this);
     }
 
     private void showSimpleDemo() {
