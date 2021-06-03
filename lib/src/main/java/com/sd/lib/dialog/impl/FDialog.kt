@@ -492,6 +492,15 @@ open class FDialog : IDialog {
 
     protected open fun onTouchOutside(event: MotionEvent?) {}
 
+    protected open fun onBackPressed() {
+        if (_cancelable) {
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "onBackPressed try dismiss")
+            }
+            dismiss()
+        }
+    }
+
     private var _targetDialog: SimpleTargetDialog? = null
 
     private val _targetDialogLazy: SimpleTargetDialog by lazy {
@@ -545,8 +554,19 @@ open class FDialog : IDialog {
             }
         }
 
-        override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-            return super.onKeyDown(keyCode, event)
+        override fun hasFocus(): Boolean {
+            return true
+        }
+
+        override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+            if (event.action == KeyEvent.ACTION_UP) {
+                val keyCode = event.keyCode
+                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                    onBackPressed()
+                    return true
+                }
+            }
+            return super.dispatchKeyEvent(event)
         }
 
         override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
