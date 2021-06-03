@@ -101,8 +101,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (v == _binding.btnSimpleDemo) {
+        if (v == _binding.btnSimple) {
             showSimpleDemo();
+        } else if (v == _binding.btnSystemUi) {
+            new SystemUIDialog(this).show();
         } else if (v == _binding.btnTarget) {
             new PositionDialog(this, v).show();
         }
