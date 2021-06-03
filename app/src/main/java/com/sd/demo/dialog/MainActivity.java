@@ -14,6 +14,8 @@ import com.sd.lib.dialog.impl.FDialog;
 import com.sd.lib.systemui.statusbar.FStatusBar;
 import com.sd.lib.systemui.statusbar.FStatusBarUtils;
 
+import org.jetbrains.annotations.Nullable;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -35,7 +37,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showSimpleDemo() {
-        final FDialog dialog = new FDialog(this);
+        final FDialog dialog = new FDialog(this) {
+            @Override
+            protected void onContentViewChanged(@Nullable View oldView, @Nullable View contentView) {
+                super.onContentViewChanged(oldView, contentView);
+                Log.i(TAG, "onContentViewChanged oldView:" + oldView + " contentView:" + contentView);
+            }
+
+            @Override
+            protected void onCreate(@Nullable Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+                Log.i(TAG, "onCreate savedInstanceState:" + savedInstanceState);
+            }
+
+            @Override
+            protected void onStart() {
+                super.onStart();
+                Log.i(TAG, "onStart");
+            }
+
+            @Override
+            protected void onStop() {
+                super.onStop();
+                Log.i(TAG, "onStop");
+            }
+        };
 
         /**
          * 设置填充
@@ -57,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.setOnDismissListener(new IDialog.OnDismissListener() {
             @Override
             public void onDismiss(IDialog dialog) {
-                Log.i(TAG, "onDismiss:" + dialog);
+                Log.i(TAG, "onDismiss");
             }
         });
 
@@ -67,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.setOnShowListener(new IDialog.OnShowListener() {
             @Override
             public void onShow(IDialog dialog) {
-                Log.i(TAG, "onShow:" + dialog);
+                Log.i(TAG, "onShow");
             }
         });
 
