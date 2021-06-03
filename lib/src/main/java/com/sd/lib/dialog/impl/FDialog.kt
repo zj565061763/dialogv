@@ -56,7 +56,7 @@ open class FDialog : IDialog {
 
     override var isDebug: Boolean = false
 
-    override val context: Context get() = ownerActivity
+    override val context: Context get() = _activity
 
     override val ownerActivity: Activity get() = _activity
 
