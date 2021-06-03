@@ -1,11 +1,11 @@
-package com.sd.lib.dialog.displayer
+package com.sd.lib.dialog.display
 
 import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
 import com.sd.lib.dialog.IDialog
 
-class ActivityDisplayer : IDialog.Displayer {
+class ActivityDisplay : IDialog.Display {
     override fun showDialog(view: View) {
         val context = view.context
         if (context is Activity) {

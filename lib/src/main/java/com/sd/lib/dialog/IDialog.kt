@@ -34,7 +34,7 @@ interface IDialog {
     /**
      * 窗口显示对象
      */
-    var displayer: Displayer
+    var display: Display
 
     /**
      * 返回窗口的内容view
@@ -158,7 +158,7 @@ interface IDialog {
         fun onShow(dialog: IDialog)
     }
 
-    interface Displayer {
+    interface Display {
         /**
          * 显示窗口
          */

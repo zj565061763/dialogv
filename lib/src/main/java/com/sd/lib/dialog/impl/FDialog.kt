@@ -19,7 +19,7 @@ import com.sd.lib.dialog.IDialog
 import com.sd.lib.dialog.ITargetDialog
 import com.sd.lib.dialog.R
 import com.sd.lib.dialog.animator.*
-import com.sd.lib.dialog.displayer.ActivityDisplayer
+import com.sd.lib.dialog.display.ActivityDisplay
 
 open class FDialog : IDialog {
     private val _activity: Activity
@@ -142,7 +142,7 @@ open class FDialog : IDialog {
             _dialogView.containerView.gravity = value
         }
 
-    override var displayer: IDialog.Displayer = ActivityDisplayer()
+    override var display: IDialog.Display = ActivityDisplay()
 
     override fun setAnimatorDuration(duration: Long) {
         _animatorDuration = duration
@@ -699,7 +699,7 @@ open class FDialog : IDialog {
             Log.e(IDialog::class.java.simpleName, "showDialog")
         }
 
-        displayer.showDialog(_dialogView)
+        display.showDialog(_dialogView)
         setState(State.Shown)
     }
 
@@ -709,7 +709,7 @@ open class FDialog : IDialog {
         }
 
         stopDismissRunnable()
-        displayer.dismissDialog(_dialogView)
+        display.dismissDialog(_dialogView)
         setState(State.Dismissed)
     }
 
