@@ -245,8 +245,22 @@ open class FDialog : IDialog {
             if (isDebug) {
                 Log.e(IDialog::class.java.simpleName, "setState:${state}")
             }
+
             if (state.isDismissPart) {
                 setTryStartShowAnimator(false)
+            }
+
+            when (state) {
+                State.Shown -> {
+                    _dialogHandler.post {
+                        _onShowListener?.onShow(this@FDialog)
+                    }
+                }
+                State.Dismissed -> {
+                    _dialogHandler.post {
+                        _onDismissListener?.onDismiss(this@FDialog)
+                    }
+                }
             }
         }
     }
@@ -696,6 +710,7 @@ open class FDialog : IDialog {
         if (isDebug) {
             Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator}")
         }
+        stopDismissRunnable()
 
         val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
         container.removeView(_dialogView)
@@ -716,10 +731,6 @@ open class FDialog : IDialog {
 
         setLockDialog(false)
         setDefaultConfigBeforeShow()
-
-        _dialogHandler.post {
-            _onShowListener?.onShow(this@FDialog)
-        }
     }
 
     private fun notifyStop() {
@@ -730,16 +741,11 @@ open class FDialog : IDialog {
         activityLifecycleCallbacks.register(false)
         FDialogHolder.removeDialog(this@FDialog)
 
-        stopDismissRunnable()
         onStop()
         _targetDialog?.onStop()
 
         if (_isAnimatorCreatorModifiedInternal) {
             animatorCreator = null
-        }
-
-        _dialogHandler.post {
-            _onDismissListener?.onDismiss(this@FDialog)
         }
     }
 
