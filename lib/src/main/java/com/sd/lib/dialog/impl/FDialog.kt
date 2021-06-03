@@ -68,7 +68,7 @@ open class FDialog : IDialog {
         val view = if (layoutId == 0) {
             null
         } else {
-            LayoutInflater.from(ownerActivity).inflate(layoutId, _dialogView.containerView, false)
+            LayoutInflater.from(context).inflate(layoutId, _dialogView.containerView, false)
         }
         setContentView(view)
     }
@@ -109,7 +109,7 @@ open class FDialog : IDialog {
     override fun setBackgroundDim(dim: Boolean) {
         _isBackgroundDim = dim
         if (dim) {
-            val color = ownerActivity.resources.getColor(R.color.lib_dialog_background_dim)
+            val color = context.resources.getColor(R.color.lib_dialog_background_dim)
             _dialogView.backgroundView.setBackgroundColor(color)
         } else {
             _dialogView.backgroundView.setBackgroundColor(0)
