@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         FStatusBarUtils.setTransparent(this);
+
+        new TransparentDialog(this).show();
     }
 
     private void showSimpleDemo() {
