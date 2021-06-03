@@ -30,6 +30,7 @@ open class FDialog : IDialog {
 
     private var _state = State.Dismissed
     private var _gravity = Gravity.NO_GRAVITY
+    private var _cancelable = true
     private var _canceledOnTouchOutside = true
     private var _isBackgroundDim = false
 
@@ -118,7 +119,14 @@ open class FDialog : IDialog {
         }
     }
 
+    override fun setCancelable(cancel: Boolean) {
+        _cancelable = cancel
+    }
+
     override fun setCanceledOnTouchOutside(cancel: Boolean) {
+        if (cancel) {
+            _cancelable = true
+        }
         _canceledOnTouchOutside = cancel
     }
 
@@ -537,6 +545,10 @@ open class FDialog : IDialog {
             }
         }
 
+        override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+            return super.onKeyDown(keyCode, event)
+        }
+
         override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
             return if (_lockDialog) {
                 true
@@ -556,7 +568,7 @@ open class FDialog : IDialog {
                     // 不处理
                 } else {
                     onTouchOutside(event)
-                    if (_canceledOnTouchOutside) {
+                    if (_cancelable && _canceledOnTouchOutside) {
                         if (isDebug) {
                             Log.i(IDialog::class.java.simpleName, "touch outside try dismiss")
                         }

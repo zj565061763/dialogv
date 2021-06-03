@@ -62,6 +62,11 @@ interface IDialog {
     fun setBackgroundDim(dim: Boolean)
 
     /**
+     * 设置窗口是否可以取消，默认true
+     */
+    fun setCancelable(cancel: Boolean)
+
+    /**
      * 设置触摸到非内容view区域是否关闭窗口，默认true
      */
     fun setCanceledOnTouchOutside(cancel: Boolean)
