@@ -480,7 +480,7 @@ open class FDialog : IDialog {
         val backgroundView: View
         val containerView: LinearLayout
 
-        private var _shouldNotifyOnCreate = true
+        private var _shouldNotifyCreate = true
         private var _savedInstanceState: Bundle? = null
 
         constructor(context: Context) : super(context) {
@@ -509,8 +509,8 @@ open class FDialog : IDialog {
         }
 
         private fun notifyCreate() {
-            if (_shouldNotifyOnCreate) {
-                _shouldNotifyOnCreate = false
+            if (_shouldNotifyCreate) {
+                _shouldNotifyCreate = false
                 onCreate(_savedInstanceState)
             }
         }
@@ -518,7 +518,9 @@ open class FDialog : IDialog {
         override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
             return if (_lockDialog) {
                 true
-            } else super.onInterceptTouchEvent(ev)
+            } else {
+                super.onInterceptTouchEvent(ev)
+            }
         }
 
         override fun onTouchEvent(event: MotionEvent): Boolean {
