@@ -715,17 +715,13 @@ open class FDialog : IDialog {
         FDialogHolder.addDialog(this@FDialog)
 
         onStart()
-        if (_targetDialog != null) {
-            _targetDialog!!.onStart()
-        }
+        _targetDialog?.onStart()
 
         setLockDialog(false)
         setDefaultConfigBeforeShow()
 
         _dialogHandler.post {
-            if (_onShowListener != null) {
-                _onShowListener!!.onShow(this@FDialog)
-            }
+            _onShowListener?.onShow(this@FDialog)
         }
     }
 
@@ -739,18 +735,14 @@ open class FDialog : IDialog {
 
         stopDismissRunnable()
         onStop()
-        if (_targetDialog != null) {
-            _targetDialog!!.onStop()
-        }
+        _targetDialog?.onStop()
 
         if (_isAnimatorCreatorModifiedInternal) {
             animatorCreator = null
         }
 
         _dialogHandler.post {
-            if (_onDismissListener != null) {
-                _onDismissListener!!.onDismiss(this@FDialog)
-            }
+            _onDismissListener?.onDismiss(this@FDialog)
         }
     }
 
