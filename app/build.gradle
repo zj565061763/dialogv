@@ -7,12 +7,16 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.sd.demo.dialog"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    viewBinding {
+        enabled = true
     }
 
     buildTypes {
@@ -43,5 +47,6 @@ dependencies {
         androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
         implementation project(path: ':lib')
+        implementation 'com.github.zj565061763:systemui:latest.release'
     }
 }

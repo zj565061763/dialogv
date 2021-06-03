@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center_vertical"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_left_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="left_top"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_left_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="left_center"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_left_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="left_bottom"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_vertical"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_right_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="right_top"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_right_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="right_center"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_right_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="right_bottom"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_top_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="top_left"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_top_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="top_center"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_top_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="top_right"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_bottom_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="bottom_left"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_bottom_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="bottom_center"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_bottom_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="bottom_right"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+</FrameLayout>
