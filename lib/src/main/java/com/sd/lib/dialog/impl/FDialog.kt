@@ -661,9 +661,16 @@ open class FDialog : IDialog {
         }
     }
 
-    private inner class InternalBackgroundView(context: Context?) : View(context) {
-        init {
+    private inner class InternalBackgroundView : View {
+        constructor(context: Context) : super(context) {
             setBackgroundColor(Color.TRANSPARENT)
+        }
+
+        override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+            super.onLayout(changed, l, t, r, b)
+            if (changed) {
+                Utils.checkMatchLayoutParams(this)
+            }
         }
     }
 
