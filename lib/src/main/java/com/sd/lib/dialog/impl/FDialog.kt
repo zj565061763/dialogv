@@ -466,12 +466,16 @@ open class FDialog : IDialog {
 
     protected open fun onTouchOutside(event: MotionEvent?) {}
 
-    private val _targetDialog: SimpleTargetDialog by lazy {
-        SimpleTargetDialog(this)
+    private var _targetDialog: SimpleTargetDialog? = null
+
+    private val _targetDialogLazy: SimpleTargetDialog by lazy {
+        SimpleTargetDialog(this).also {
+            _targetDialog = it
+        }
     }
 
     override fun target(): ITargetDialog {
-        return _targetDialog
+        return _targetDialogLazy
     }
 
     private inner class InternalDialogView : FrameLayout {
