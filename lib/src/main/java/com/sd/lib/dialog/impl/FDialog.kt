@@ -1,1249 +1,825 @@
-package com.sd.lib.dialog.impl;
+package com.sd.lib.dialog.impl
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.app.Activity;
-import android.app.Application;
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Parcelable;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.app.Activity
+import android.app.Application.ActivityLifecycleCallbacks
+import android.content.Context
+import android.graphics.Color
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Parcelable
+import android.util.Log
+import android.view.*
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import com.sd.lib.dialog.IDialog
+import com.sd.lib.dialog.ITargetDialog
+import com.sd.lib.dialog.R
+import com.sd.lib.dialog.animator.*
 
-import com.sd.lib.dialog.IDialog;
-import com.sd.lib.dialog.ITargetDialog;
-import com.sd.lib.dialog.R;
-import com.sd.lib.dialog.animator.AlphaCreator;
-import com.sd.lib.dialog.animator.AnimatorCreator;
-import com.sd.lib.dialog.animator.ObjectAnimatorCreator;
-import com.sd.lib.dialog.animator.SlideBottomTopParentCreator;
-import com.sd.lib.dialog.animator.SlideLeftRightParentCreator;
-import com.sd.lib.dialog.animator.SlideRightLeftParentCreator;
-import com.sd.lib.dialog.animator.SlideTopBottomParentCreator;
+open class FDialog : IDialog {
+    private val _activity: Activity
 
-import java.util.List;
+    private val _dialogView: InternalDialogView
+    private var _contentView: View? = null
 
-public class FDialog implements IDialog
-{
-    private final Activity mActivity;
+    private var _state = State.Dismissed
+    private var _gravity = Gravity.NO_GRAVITY
+    private var _canceledOnTouchOutside = true
+    private var _isBackgroundDim = false
 
-    private final InternalDialogView _dialogView;
-    private final LinearLayout _containerView;
-    private final View _backgroundView;
-    private View mContentView;
+    private var _animatorCreator: AnimatorCreator? = null
+    private var _animatorDuration: Long = 0
 
-    private State _state = State.Dismissed;
+    private var _lockDialog = false
+    private var _tryStartShowAnimator = false
+    private var _isAnimatorCreatorModifiedInternal = false
 
-    private int mGravity = Gravity.NO_GRAVITY;
-    private boolean mCanceledOnTouchOutside = true;
-    private boolean mIsBackgroundDim;
+    private var _onDismissListener: IDialog.OnDismissListener? = null
+    private var _onShowListener: IDialog.OnShowListener? = null
 
-    private FVisibilityAnimatorHandler mAnimatorHandler;
-    private AnimatorCreator mAnimatorCreator;
-    private AnimatorCreator mBackgroundViewAnimatorCreator;
-    private long mAnimatorDuration;
+    private val _dialogHandler by lazy { Handler(Looper.getMainLooper()) }
 
-    private boolean _lockDialog;
-    private boolean _tryStartShowAnimator;
-    private boolean _isAnimatorCreatorModifiedInternal;
+    constructor(activity: Activity) {
+        _activity = activity
+        _dialogView = InternalDialogView(activity)
 
-    private OnDismissListener mOnDismissListener;
-    private OnShowListener mOnShowListener;
+        val defaultPadding = (activity.resources.displayMetrics.widthPixels * 0.1f).toInt()
+        setPadding(defaultPadding, 0, defaultPadding, 0)
 
-    private boolean mIsDebug;
+        setBackgroundDim(true)
+        gravity = Gravity.CENTER
+    }
 
-    public FDialog(Activity activity)
-    {
-        if (activity == null)
-        {
-            throw new NullPointerException("activity is null");
+    override var isDebug: Boolean = false
+
+    override val context: Context get() = ownerActivity
+
+    override val ownerActivity: Activity get() = _activity
+
+    override fun getContentView(): View? {
+        return _contentView
+    }
+
+    override fun setContentView(layoutId: Int) {
+        val view = if (layoutId == 0) {
+            null
+        } else {
+            LayoutInflater.from(ownerActivity).inflate(layoutId, _dialogView.containerView, false)
+        }
+        setContentView(view)
+    }
+
+    override fun setContentView(view: View?) {
+        setContentViewInternal(view)
+    }
+
+    private fun setContentViewInternal(view: View?) {
+        val old = _contentView
+        if (old === view) return
+
+        _contentView = view
+        if (old != null) {
+            _dialogView.containerView.removeView(old)
         }
 
-        mActivity = activity;
+        if (view != null) {
+            val p = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            view.layoutParams?.let {
+                p.width = it.width
+                p.height = it.height
+            }
+            _dialogView.containerView.addView(view, p)
+        }
 
-        _dialogView = new InternalDialogView(activity);
-        _containerView = _dialogView.mContainerView;
-        _backgroundView = _dialogView.mBackgroundView;
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "onContentViewChanged:${old} , ${view}")
+        }
 
-        final int defaultPadding = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.1f);
-        setPadding(defaultPadding, 0, defaultPadding, 0);
-
-        setBackgroundDim(true);
-        setGravity(Gravity.CENTER);
+        onContentViewChanged(old, view)
     }
 
-    @Override
-    public void setDebug(boolean debug)
-    {
-        mIsDebug = debug;
+    override fun <T : View> findViewById(id: Int): T? {
+        return _contentView?.findViewById(id)
     }
 
-    @Override
-    public Context getContext()
-    {
-        return mActivity;
+    override fun setBackgroundDim(dim: Boolean) {
+        _isBackgroundDim = dim
+        if (dim) {
+            val color = ownerActivity.resources.getColor(R.color.lib_dialog_background_dim)
+            _dialogView.backgroundView.setBackgroundColor(color)
+        } else {
+            _dialogView.backgroundView.setBackgroundColor(0)
+        }
     }
 
-    @Override
-    public Activity getOwnerActivity()
-    {
-        return mActivity;
+    override fun setCanceledOnTouchOutside(cancel: Boolean) {
+        _canceledOnTouchOutside = cancel
     }
 
-    @Override
-    public View getContentView()
-    {
-        return mContentView;
+    override fun setOnDismissListener(listener: IDialog.OnDismissListener?) {
+        _onDismissListener = listener
     }
 
-    @Override
-    public void setContentView(int layoutId)
-    {
-        final View view = LayoutInflater.from(mActivity).inflate(layoutId, _containerView, false);
-        setContentView(view);
+    override fun setOnShowListener(listener: IDialog.OnShowListener?) {
+        _onShowListener = listener
     }
 
-    @Override
-    public void setContentView(View view)
-    {
-        setContentViewInternal(view);
+    override var animatorCreator: AnimatorCreator?
+        get() = _animatorCreator
+        set(value) {
+            _animatorCreator = value
+            _isAnimatorCreatorModifiedInternal = false
+        }
+
+    override var gravity: Int
+        get() = _gravity
+        set(value) {
+            _dialogView.containerView.gravity = value
+        }
+
+    override fun setAnimatorDuration(duration: Long) {
+        _animatorDuration = duration
     }
 
-    @Override
-    public void setBackgroundDim(boolean backgroundDim)
-    {
-        if (mIsBackgroundDim != backgroundDim)
-        {
-            mIsBackgroundDim = backgroundDim;
-            if (backgroundDim)
-            {
-                final int color = mActivity.getResources().getColor(R.color.lib_dialog_background_dim);
-                _backgroundView.setBackgroundColor(color);
-            } else
-            {
-                _backgroundView.setBackgroundColor(0);
+    override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
+        _dialogView.containerView.setPadding(left, top, right, bottom)
+    }
+
+    override val paddingLeft: Int get() = _dialogView.containerView.paddingLeft
+
+    override val paddingTop: Int get() = _dialogView.containerView.paddingTop
+
+    override val paddingRight: Int get() = _dialogView.containerView.paddingRight
+
+    override val paddingBottom: Int get() = _dialogView.containerView.paddingBottom
+
+    override val isShowing: Boolean get() = _state == State.Shown
+
+    override fun show() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            _showRunnable.run()
+        } else {
+            _dialogHandler.removeCallbacks(_showRunnable)
+            _dialogHandler.post(_showRunnable)
+        }
+    }
+
+    override fun dismiss() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            _dismissRunnable.run()
+        } else {
+            _dialogHandler.removeCallbacks(_dismissRunnable)
+            _dialogHandler.post(_dismissRunnable)
+        }
+    }
+
+    private val _showRunnable = Runnable {
+        val isFinishing = ownerActivity.isFinishing
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "try show isFinishing:${isFinishing}")
+        }
+        if (isFinishing) {
+            return@Runnable
+        }
+
+        if (_state.isShowPart) {
+            return@Runnable
+        }
+
+        setState(State.TryShow)
+        if (_animatorHandler.isHideAnimatorStarted) {
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "cancel HideAnimator before show")
+            }
+            _animatorHandler.cancelHideAnimator()
+        }
+        showDialog()
+    }
+
+    private val _dismissRunnable = Runnable {
+        val isFinishing = ownerActivity.isFinishing
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "try dismiss isFinishing:${isFinishing}")
+        }
+
+        if (isFinishing) {
+            if (_animatorHandler.isShowAnimatorStarted) {
+                _animatorHandler.cancelShowAnimator()
+            }
+            if (_animatorHandler.isHideAnimatorStarted) {
+                _animatorHandler.cancelHideAnimator()
+            }
+            setLockDialog(true)
+            dismissDialog(false)
+            return@Runnable
+        }
+
+        if (_state.isDismissPart) {
+            return@Runnable
+        }
+
+        setState(State.TryDismiss)
+        if (_animatorHandler.isShowAnimatorStarted) {
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "cancel ShowAnimator before dismiss")
+            }
+            _animatorHandler.cancelShowAnimator()
+        }
+
+        setLockDialog(true)
+        _animatorHandler.setHideAnimator(createAnimator(false))
+        if (_animatorHandler.startHideAnimator()) {
+            // 等待动画结束后让窗口消失
+        } else {
+            dismissDialog(false)
+        }
+    }
+
+    private fun setState(state: State) {
+        if (_state != state) {
+            _state = state
+            if (isDebug) {
+                Log.e(IDialog::class.java.simpleName, "setState:${state}")
+            }
+            if (state.isDismissPart) {
+                setTryStartShowAnimator(false)
             }
         }
     }
 
-    private void setContentViewInternal(View view)
-    {
-        final View old = mContentView;
-        if (old != view)
-        {
-            mContentView = view;
+    private fun setLockDialog(lock: Boolean) {
+        if (_lockDialog != lock) {
+            _lockDialog = lock
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "setLockDialog:${lock}")
+            }
+        }
+    }
 
-            if (old != null)
-            {
-                _containerView.removeView(old);
+    private fun setTryStartShowAnimator(tryShow: Boolean) {
+        if (_tryStartShowAnimator != tryShow) {
+            _tryStartShowAnimator = tryShow
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "setTryStartShowAnimator:${tryShow}")
+            }
+        }
+    }
+
+    private fun startShowAnimator() {
+        if (_tryStartShowAnimator) {
+            val width = _dialogView.containerView.width
+            val height = _dialogView.containerView.height
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height}")
             }
 
-            if (view != null)
-            {
-                final ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (width > 0 && height > 0) {
+                setTryStartShowAnimator(false)
+                _animatorHandler.setShowAnimator(createAnimator(true))
+                _animatorHandler.startShowAnimator()
+            }
+        }
+    }
 
-                final ViewGroup.LayoutParams params = view.getLayoutParams();
-                if (params != null)
-                {
-                    p.width = params.width;
-                    p.height = params.height;
+    override fun startDismissRunnable(delay: Long) {
+        stopDismissRunnable()
+        _dialogHandler.postDelayed(_delayedDismissRunnable, delay)
+    }
+
+    override fun stopDismissRunnable() {
+        _dialogHandler.removeCallbacks(_delayedDismissRunnable)
+    }
+
+    private val _delayedDismissRunnable = Runnable { dismiss() }
+
+    private fun setDefaultConfigBeforeShow() {
+        if (_animatorCreator == null) {
+            when (_gravity) {
+                Gravity.CENTER -> {
+                    animatorCreator = AlphaCreator()
+                    _isAnimatorCreatorModifiedInternal = true
                 }
-
-                _containerView.addView(view, p);
-            }
-
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "onContentViewChanged:" + old + " , " + view);
-            }
-
-            onContentViewChanged(old, view);
-        }
-    }
-
-    protected void onContentViewChanged(View oldView, View contentView)
-    {
-    }
-
-    @Override
-    public <T extends View> T findViewById(int id)
-    {
-        if (mContentView == null)
-        {
-            return null;
-        }
-        return mContentView.findViewById(id);
-    }
-
-    @Override
-    public void setCanceledOnTouchOutside(boolean cancel)
-    {
-        mCanceledOnTouchOutside = cancel;
-    }
-
-    @Override
-    public void setOnDismissListener(OnDismissListener listener)
-    {
-        mOnDismissListener = listener;
-    }
-
-    @Override
-    public void setOnShowListener(OnShowListener listener)
-    {
-        mOnShowListener = listener;
-    }
-
-    @Override
-    public void setAnimatorCreator(AnimatorCreator creator)
-    {
-        mAnimatorCreator = creator;
-        _isAnimatorCreatorModifiedInternal = false;
-    }
-
-    @Override
-    public AnimatorCreator getAnimatorCreator()
-    {
-        return mAnimatorCreator;
-    }
-
-    @Override
-    public void setAnimatorDuration(long duration)
-    {
-        mAnimatorDuration = duration;
-    }
-
-    @Override
-    public void setGravity(int gravity)
-    {
-        _containerView.setGravity(gravity);
-    }
-
-    @Override
-    public int getGravity()
-    {
-        return mGravity;
-    }
-
-    @Override
-    public void setPadding(int left, int top, int right, int bottom)
-    {
-        _containerView.setPadding(left, top, right, bottom);
-    }
-
-    @Override
-    public int getPaddingLeft()
-    {
-        return _containerView.getPaddingLeft();
-    }
-
-    @Override
-    public int getPaddingTop()
-    {
-        return _containerView.getPaddingTop();
-    }
-
-    @Override
-    public int getPaddingRight()
-    {
-        return _containerView.getPaddingRight();
-    }
-
-    @Override
-    public int getPaddingBottom()
-    {
-        return _containerView.getPaddingBottom();
-    }
-
-    @Override
-    public boolean isShowing()
-    {
-        return _state == State.Shown;
-    }
-
-    @Override
-    public void show()
-    {
-        if (Looper.myLooper() == Looper.getMainLooper())
-        {
-            mShowRunnable.run();
-        } else
-        {
-            getDialogHandler().removeCallbacks(mShowRunnable);
-            getDialogHandler().post(mShowRunnable);
-        }
-    }
-
-    @Override
-    public void dismiss()
-    {
-        if (Looper.myLooper() == Looper.getMainLooper())
-        {
-            mDismissRunnable.run();
-        } else
-        {
-            getDialogHandler().removeCallbacks(mDismissRunnable);
-            getDialogHandler().post(mDismissRunnable);
-        }
-    }
-
-    private final Runnable mShowRunnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            final boolean isFinishing = mActivity.isFinishing();
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "try show isFinishing:" + isFinishing);
-            }
-
-            if (isFinishing)
-            {
-                return;
-            }
-
-            if (_state.isShowPart())
-            {
-                return;
-            }
-
-            setState(State.TryShow);
-
-            if (getAnimatorHandler().isHideAnimatorStarted())
-            {
-                if (mIsDebug)
-                {
-                    Log.i(IDialog.class.getSimpleName(), "cancel HideAnimator before show");
+                Gravity.LEFT,
+                Gravity.LEFT or Gravity.CENTER -> {
+                    animatorCreator = SlideRightLeftParentCreator()
+                    _isAnimatorCreatorModifiedInternal = true
                 }
-                getAnimatorHandler().cancelHideAnimator();
-            }
-
-            showDialog();
-        }
-    };
-
-    private final Runnable mDismissRunnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            final boolean isFinishing = mActivity.isFinishing();
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "try dismiss isFinishing:" + isFinishing);
-            }
-
-            if (isFinishing)
-            {
-                if (getAnimatorHandler().isShowAnimatorStarted())
-                {
-                    getAnimatorHandler().cancelShowAnimator();
+                Gravity.TOP,
+                Gravity.TOP or Gravity.CENTER -> {
+                    animatorCreator = SlideBottomTopParentCreator()
+                    _isAnimatorCreatorModifiedInternal = true
                 }
-
-                if (getAnimatorHandler().isHideAnimatorStarted())
-                {
-                    getAnimatorHandler().cancelHideAnimator();
+                Gravity.RIGHT,
+                Gravity.RIGHT or Gravity.CENTER -> {
+                    animatorCreator = SlideLeftRightParentCreator()
+                    _isAnimatorCreatorModifiedInternal = true
                 }
-
-                setLockDialog(true);
-                dismissDialog(false);
-                return;
-            }
-
-            if (_state.isDismissPart())
-            {
-                return;
-            }
-
-            setState(State.TryDismiss);
-
-            if (getAnimatorHandler().isShowAnimatorStarted())
-            {
-                if (mIsDebug)
-                {
-                    Log.i(IDialog.class.getSimpleName(), "cancel ShowAnimator before dismiss");
+                Gravity.BOTTOM,
+                Gravity.BOTTOM or Gravity.CENTER -> {
+                    animatorCreator = SlideTopBottomParentCreator()
+                    _isAnimatorCreatorModifiedInternal = true
                 }
-                getAnimatorHandler().cancelShowAnimator();
-            }
-
-            setLockDialog(true);
-
-            getAnimatorHandler().setHideAnimator(createAnimator(false));
-            if (getAnimatorHandler().startHideAnimator())
-            {
-                // 等待动画结束后让窗口消失
-            } else
-            {
-                dismissDialog(false);
-            }
-        }
-    };
-
-    private void setLockDialog(boolean lock)
-    {
-        if (_lockDialog != lock)
-        {
-            _lockDialog = lock;
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "setLockDialog:" + lock);
             }
         }
     }
 
-    private void setTryStartShowAnimator(boolean tryShow)
-    {
-        if (_tryStartShowAnimator != tryShow)
-        {
-            _tryStartShowAnimator = tryShow;
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "setTryStartShowAnimator:" + tryShow);
-            }
-        }
-    }
-
-    private void startShowAnimator()
-    {
-        if (_tryStartShowAnimator)
-        {
-            final int width = _containerView.getWidth();
-            final int height = _containerView.getHeight();
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "startShowAnimator width:" + width + " height:" + height);
-            }
-
-            if (width > 0 && height > 0)
-            {
-                setTryStartShowAnimator(false);
-                getAnimatorHandler().setShowAnimator(createAnimator(true));
-                getAnimatorHandler().startShowAnimator();
-            }
-        }
-    }
-
-    private void setState(State state)
-    {
-        if (state == null)
-        {
-            throw new IllegalArgumentException("state is null");
-        }
-
-        if (_state != state)
-        {
-            _state = state;
-            if (mIsDebug)
-            {
-                Log.e(IDialog.class.getSimpleName(), "setState:" + state);
-            }
-
-            if (state.isDismissPart())
-            {
-                setTryStartShowAnimator(false);
-            }
-        }
-    }
-
-    @Override
-    public void startDismissRunnable(long delay)
-    {
-        stopDismissRunnable();
-        getDialogHandler().postDelayed(mDelayedDismissRunnable, delay);
-    }
-
-    @Override
-    public void stopDismissRunnable()
-    {
-        getDialogHandler().removeCallbacks(mDelayedDismissRunnable);
-    }
-
-    private Handler mDialogHandler;
-
-    private Handler getDialogHandler()
-    {
-        if (mDialogHandler == null)
-        {
-            mDialogHandler = new Handler(Looper.getMainLooper());
-        }
-        return mDialogHandler;
-    }
-
-    private final Runnable mDelayedDismissRunnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            dismiss();
-        }
-    };
-
-    private void setDefaultConfigBeforeShow()
-    {
-        if (mAnimatorCreator == null)
-        {
-            switch (mGravity)
-            {
-                case Gravity.CENTER:
-                    setAnimatorCreator(new AlphaCreator());
-                    _isAnimatorCreatorModifiedInternal = true;
-                    break;
-                case Gravity.LEFT:
-                case Gravity.LEFT | Gravity.CENTER:
-                    setAnimatorCreator(new SlideRightLeftParentCreator());
-                    _isAnimatorCreatorModifiedInternal = true;
-                    break;
-                case Gravity.TOP:
-                case Gravity.TOP | Gravity.CENTER:
-                    setAnimatorCreator(new SlideBottomTopParentCreator());
-                    _isAnimatorCreatorModifiedInternal = true;
-                    break;
-                case Gravity.RIGHT:
-                case Gravity.RIGHT | Gravity.CENTER:
-                    setAnimatorCreator(new SlideLeftRightParentCreator());
-                    _isAnimatorCreatorModifiedInternal = true;
-                    break;
-                case Gravity.BOTTOM:
-                case Gravity.BOTTOM | Gravity.CENTER:
-                    setAnimatorCreator(new SlideTopBottomParentCreator());
-                    _isAnimatorCreatorModifiedInternal = true;
-                    break;
-            }
-        }
-    }
-
-    private FVisibilityAnimatorHandler getAnimatorHandler()
-    {
-        if (mAnimatorHandler == null)
-        {
-            mAnimatorHandler = new FVisibilityAnimatorHandler();
-            mAnimatorHandler.setShowAnimatorListener(new AnimatorListenerAdapter()
-            {
-                @Override
-                public void onAnimationStart(Animator animation)
-                {
-                    super.onAnimationStart(animation);
-                    if (mIsDebug)
-                    {
-                        Log.i(IDialog.class.getSimpleName(), "show onAnimationStart ");
+    private val _animatorHandler: FVisibilityAnimatorHandler by lazy {
+        FVisibilityAnimatorHandler().also {
+            it.setShowAnimatorListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    super.onAnimationStart(animation)
+                    if (isDebug) {
+                        Log.i(IDialog::class.java.simpleName, "show onAnimationStart ")
                     }
                 }
 
-                @Override
-                public void onAnimationCancel(Animator animation)
-                {
-                    super.onAnimationCancel(animation);
-                    if (mIsDebug)
-                    {
-                        Log.i(IDialog.class.getSimpleName(), "show onAnimationCancel ");
+                override fun onAnimationCancel(animation: Animator) {
+                    super.onAnimationCancel(animation)
+                    if (isDebug) {
+                        Log.i(IDialog::class.java.simpleName, "show onAnimationCancel ")
                     }
                 }
 
-                @Override
-                public void onAnimationEnd(Animator animation)
-                {
-                    super.onAnimationEnd(animation);
-                    if (mIsDebug)
-                    {
-                        Log.i(IDialog.class.getSimpleName(), "show onAnimationEnd ");
+                override fun onAnimationEnd(animation: Animator) {
+                    super.onAnimationEnd(animation)
+                    if (isDebug) {
+                        Log.i(IDialog::class.java.simpleName, "show onAnimationEnd ")
                     }
                 }
-            });
-            mAnimatorHandler.setHideAnimatorListener(new AnimatorListenerAdapter()
-            {
-                @Override
-                public void onAnimationStart(Animator animation)
-                {
-                    super.onAnimationStart(animation);
-                    if (mIsDebug)
-                    {
-                        Log.i(IDialog.class.getSimpleName(), "dismiss onAnimationStart ");
+            })
+
+            it.setHideAnimatorListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    super.onAnimationStart(animation)
+                    if (isDebug) {
+                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationStart ")
                     }
                 }
 
-                @Override
-                public void onAnimationCancel(Animator animation)
-                {
-                    super.onAnimationCancel(animation);
-                    if (mIsDebug)
-                    {
-                        Log.i(IDialog.class.getSimpleName(), "dismiss onAnimationCancel ");
+                override fun onAnimationCancel(animation: Animator) {
+                    super.onAnimationCancel(animation)
+                    if (isDebug) {
+                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationCancel ")
                     }
                 }
 
-                @Override
-                public void onAnimationEnd(Animator animation)
-                {
-                    super.onAnimationEnd(animation);
-                    if (mIsDebug)
-                    {
-                        Log.i(IDialog.class.getSimpleName(), "dismiss onAnimationEnd ");
+                override fun onAnimationEnd(animation: Animator) {
+                    super.onAnimationEnd(animation)
+                    if (isDebug) {
+                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationEnd ")
                     }
-                    dismissDialog(true);
+                    dismissDialog(true)
                 }
-            });
+            })
         }
-        return mAnimatorHandler;
     }
 
-    private Animator createAnimator(boolean show)
-    {
-        Animator animator = null;
-
-        Animator animatorBackground = null;
-        if (show)
-        {
-            if (mIsBackgroundDim)
-            {
-                animatorBackground = getBackgroundViewAnimatorCreator().createAnimator(true, _backgroundView);
-            }
-        } else
-        {
-            if (mIsBackgroundDim)
-            {
-                animatorBackground = getBackgroundViewAnimatorCreator().createAnimator(false, _backgroundView);
-            }
+    private fun createAnimator(show: Boolean): Animator? {
+        // 背景View动画
+        val animatorBackground = if (_isBackgroundDim) {
+            _backgroundViewAnimatorCreator.createAnimator(show, _dialogView.backgroundView)
+        } else {
+            null
         }
 
-        final Animator animatorContent = (mAnimatorCreator == null || mContentView == null) ?
-                null : mAnimatorCreator.createAnimator(show, mContentView);
+        // 内容View动画
+        val creator = _animatorCreator
+        val view = _contentView
+        val animatorContent = if (creator == null || view == null) {
+            null
+        } else {
+            creator.createAnimator(show, view)
+        }
 
-        if (animatorBackground != null && animatorContent != null)
-        {
-            final long duration = Utils.getAnimatorDuration(animatorContent);
-            if (duration < 0)
-            {
-                throw new RuntimeException("Illegal duration:" + duration);
+        val animator = if (animatorBackground != null && animatorContent != null) {
+            val duration = Utils.getAnimatorDuration(animatorContent)
+            if (duration < 0) throw RuntimeException("Illegal duration:${duration}")
+            animatorBackground.duration = duration
+
+            AnimatorSet().apply {
+                this.play(animatorBackground).with(animatorContent)
             }
-            animatorBackground.setDuration(duration);
-
-            final AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.play(animatorBackground).with(animatorContent);
-            animator = animatorSet;
-        } else
-        {
-            animator = animatorContent;
+        } else {
+            animatorContent
         }
 
-        if (mAnimatorDuration > 0)
-        {
-            if (animator != null)
-            {
-                animator.setDuration(mAnimatorDuration);
-            }
+        if (_animatorDuration > 0) {
+            animator?.duration = _animatorDuration
         }
 
-        if (mIsDebug)
-        {
-            Log.i(IDialog.class.getSimpleName(), "createAnimator " + (show ? "show" : "dismiss") + " animator " + (animator == null ? "null" : "not null"));
+        if (isDebug) {
+            val showOrDismiss = if (show) "show" else "dismiss"
+            Log.i(IDialog::class.java.simpleName, "createAnimator ${showOrDismiss} animator ${animator}")
         }
-
-        return animator;
+        return animator
     }
 
-    private AnimatorCreator getBackgroundViewAnimatorCreator()
-    {
-        if (mBackgroundViewAnimatorCreator == null)
-        {
-            mBackgroundViewAnimatorCreator = new ObjectAnimatorCreator()
-            {
-                @Override
-                protected String getPropertyName()
-                {
-                    return View.ALPHA.getName();
+    private val _backgroundViewAnimatorCreator: AnimatorCreator by lazy {
+        object : ObjectAnimatorCreator() {
+            override fun getPropertyName(): String {
+                return View.ALPHA.name
+            }
+
+            override fun getValueHidden(view: View): Float {
+                return 0.0f
+            }
+
+            override fun getValueShown(view: View): Float {
+                return 1.0f
+            }
+
+            override fun getValueCurrent(view: View): Float {
+                return view.alpha
+            }
+
+            override fun onAnimationStart(show: Boolean, view: View) {
+                super.onAnimationStart(show, view)
+                view.visibility = View.VISIBLE
+            }
+
+            override fun onAnimationEnd(show: Boolean, view: View) {
+                super.onAnimationEnd(show, view)
+                if (!show) {
+                    view.visibility = View.INVISIBLE
                 }
-
-                @Override
-                protected float getValueHidden(View view)
-                {
-                    return 0.0f;
-                }
-
-                @Override
-                protected float getValueShown(View view)
-                {
-                    return 1.0f;
-                }
-
-                @Override
-                protected float getValueCurrent(View view)
-                {
-                    return view.getAlpha();
-                }
-
-                @Override
-                protected void onAnimationStart(boolean show, View view)
-                {
-                    super.onAnimationStart(show, view);
-                    view.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                protected void onAnimationEnd(boolean show, View view)
-                {
-                    super.onAnimationEnd(show, view);
-                    if (!show)
-                    {
-                        view.setVisibility(View.INVISIBLE);
-                    }
-                }
-            };
+            }
         }
-        return mBackgroundViewAnimatorCreator;
     }
 
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected open fun onContentViewChanged(oldView: View?, contentView: View?) {}
+
+    protected open fun onCreate(savedInstanceState: Bundle?) {}
+
+    protected open fun onSaveInstanceState(bundle: Bundle?) {}
+
+    protected open fun onStart() {}
+
+    protected open fun onStop() {}
+
+    protected open fun onTouchEvent(event: MotionEvent?): Boolean {
+        return false
     }
 
-    protected void onSaveInstanceState(Bundle bundle)
-    {
+    protected open fun onTouchOutside(event: MotionEvent?) {}
+
+    private val _targetDialog: SimpleTargetDialog by lazy {
+        SimpleTargetDialog(this)
     }
 
-    protected void onStart()
-    {
+    override fun target(): ITargetDialog {
+        return _targetDialog
     }
 
-    protected void onStop()
-    {
-    }
+    private inner class InternalDialogView : FrameLayout {
+        private val KEY_SUPER_STATE = "InternalDialogView_super_onSaveInstanceState"
 
-    protected boolean onTouchEvent(MotionEvent event)
-    {
-        return false;
-    }
+        val backgroundView: View
+        val containerView: LinearLayout
 
-    protected void onTouchOutside(MotionEvent event)
-    {
-    }
+        private var _shouldNotifyOnCreate = true
+        private var _savedInstanceState: Bundle? = null
 
-    private SimpleTargetDialog mTargetDialog;
+        constructor(context: Context) : super(context) {
+            backgroundView = InternalBackgroundView(context)
+            addView(backgroundView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
-    @Override
-    public ITargetDialog target()
-    {
-        if (mTargetDialog == null)
-        {
-            mTargetDialog = new SimpleTargetDialog(this);
-        }
-        return mTargetDialog;
-    }
-
-    private final class InternalDialogView extends FrameLayout
-    {
-        private static final String KEY_SUPER_STATE = "InternalDialogView_super_onSaveInstanceState";
-
-        private final View mBackgroundView;
-        private final LinearLayout mContainerView;
-
-        private boolean mShouldNotifyOnCreate = true;
-        private Bundle mSavedInstanceState = null;
-
-        public InternalDialogView(Context context)
-        {
-            super(context);
-            mBackgroundView = new InternalBackgroundView(context);
-            addView(mBackgroundView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-            mContainerView = new InternalContainerView(context);
-            addView(mContainerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            containerView = InternalContainerView(context)
+            addView(containerView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
 
-        @Override
-        protected Parcelable onSaveInstanceState()
-        {
-            final Bundle bundle = new Bundle();
-            FDialog.this.onSaveInstanceState(bundle);
-            bundle.putParcelable(KEY_SUPER_STATE, super.onSaveInstanceState());
-            return bundle;
-        }
-
-        @Override
-        protected void onRestoreInstanceState(Parcelable state)
-        {
-            if (state instanceof Bundle)
-            {
-                final Bundle bundle = (Bundle) state;
-                super.onRestoreInstanceState(bundle.getParcelable(KEY_SUPER_STATE));
-                mSavedInstanceState = bundle;
-                notifyCreate();
-            } else
-            {
-                super.onRestoreInstanceState(state);
+        override fun onSaveInstanceState(): Parcelable? {
+            return Bundle().also { bundle ->
+                this@FDialog.onSaveInstanceState(bundle)
+                bundle.putParcelable(KEY_SUPER_STATE, super.onSaveInstanceState())
             }
         }
 
-        private void notifyCreate()
-        {
-            if (mShouldNotifyOnCreate)
-            {
-                mShouldNotifyOnCreate = false;
-                FDialog.this.onCreate(mSavedInstanceState);
+        override fun onRestoreInstanceState(state: Parcelable) {
+            if (state is Bundle) {
+                super.onRestoreInstanceState(state.getParcelable(KEY_SUPER_STATE))
+                _savedInstanceState = state
+                notifyCreate()
+            } else {
+                super.onRestoreInstanceState(state)
             }
         }
 
-        @Override
-        public boolean onInterceptTouchEvent(MotionEvent ev)
-        {
-            if (_lockDialog)
-            {
-                return true;
+        private fun notifyCreate() {
+            if (_shouldNotifyOnCreate) {
+                _shouldNotifyOnCreate = false
+                onCreate(_savedInstanceState)
             }
-            return super.onInterceptTouchEvent(ev);
         }
 
-        @Override
-        public boolean onTouchEvent(MotionEvent event)
-        {
-            if (_lockDialog)
-            {
-                return true;
+        override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+            return if (_lockDialog) {
+                true
+            } else super.onInterceptTouchEvent(ev)
+        }
+
+        override fun onTouchEvent(event: MotionEvent): Boolean {
+            if (_lockDialog) {
+                return true
             }
 
-            if (event.getAction() == MotionEvent.ACTION_DOWN)
-            {
-                final boolean isViewUnder = Utils.isViewUnder(mContentView, (int) event.getX(), (int) event.getY());
-                if (isViewUnder)
-                {
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val isViewUnder = Utils.isViewUnder(_contentView, event.x.toInt(), event.y.toInt())
+                if (isViewUnder) {
                     // 不处理
-                } else
-                {
-                    onTouchOutside(event);
-                    if (mCanceledOnTouchOutside)
-                    {
-                        if (mIsDebug)
-                        {
-                            Log.i(IDialog.class.getSimpleName(), "touch outside try dismiss");
+                } else {
+                    onTouchOutside(event)
+                    if (_canceledOnTouchOutside) {
+                        if (isDebug) {
+                            Log.i(IDialog::class.java.simpleName, "touch outside try dismiss")
                         }
-                        dismiss();
-                        return true;
+                        dismiss()
+                        return true
                     }
                 }
             }
 
-            if (FDialog.this.onTouchEvent(event))
-            {
-                return true;
+            if (this@FDialog.onTouchEvent(event)) {
+                return true
             }
 
-            super.onTouchEvent(event);
-            return true;
+            super.onTouchEvent(event)
+            return true
         }
 
-        @Override
-        protected void onAttachedToWindow()
-        {
-            super.onAttachedToWindow();
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "onAttachedToWindow");
+        override fun onAttachedToWindow() {
+            super.onAttachedToWindow()
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "onAttachedToWindow")
             }
-            notifyCreate();
-            notifyStart();
+            notifyCreate()
+            notifyStart()
         }
 
-        @Override
-        protected void onDetachedFromWindow()
-        {
-            super.onDetachedFromWindow();
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "onDetachedFromWindow");
+        override fun onDetachedFromWindow() {
+            super.onDetachedFromWindow()
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "onDetachedFromWindow")
             }
-            notifyStop();
+            notifyStop()
         }
 
-        @Override
-        public void onViewAdded(View child)
-        {
-            super.onViewAdded(child);
-            if (child != mBackgroundView && child != mContainerView)
-            {
-                throw new RuntimeException("you can not add view to dialog view");
+        override fun onViewAdded(child: View) {
+            super.onViewAdded(child)
+            if (child !== backgroundView && child !== containerView) {
+                throw RuntimeException("can not add view to dialog view")
             }
         }
 
-        @Override
-        public void onViewRemoved(View child)
-        {
-            super.onViewRemoved(child);
-            if (child == mBackgroundView || child == mContainerView)
-            {
-                throw new RuntimeException("you can not remove dialog child");
+        override fun onViewRemoved(child: View) {
+            super.onViewRemoved(child)
+            if (child === backgroundView || child === containerView) {
+                throw RuntimeException("can not remove dialog child")
             }
         }
 
-        @Override
-        public void setVisibility(int visibility)
-        {
-            if (visibility == GONE || visibility == INVISIBLE)
-            {
-                throw new IllegalArgumentException("you can not hide dialog");
+        override fun setVisibility(visibility: Int) {
+            if (visibility == GONE || visibility == INVISIBLE) {
+                throw RuntimeException("can not hide dialog")
             }
-            super.setVisibility(visibility);
+            super.setVisibility(visibility)
         }
     }
 
-    private final class InternalContainerView extends LinearLayout
-    {
-        public InternalContainerView(Context context)
-        {
-            super(context);
-        }
+    private inner class InternalContainerView : LinearLayout {
+        constructor(context: Context) : super(context)
 
-        @Override
-        public void setGravity(int gravity)
-        {
-            if (mGravity != gravity)
-            {
-                mGravity = gravity;
-                super.setGravity(gravity);
+        override fun setGravity(gravity: Int) {
+            if (_gravity != gravity) {
+                _gravity = gravity
+                super.setGravity(gravity)
             }
         }
 
-        @Override
-        public void setPadding(int left, int top, int right, int bottom)
-        {
-            if (left < 0)
-            {
-                left = getPaddingLeft();
-            }
-            if (top < 0)
-            {
-                top = getPaddingTop();
-            }
-            if (right < 0)
-            {
-                right = getPaddingRight();
-            }
-            if (bottom < 0)
-            {
-                bottom = getPaddingBottom();
-            }
+        override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
+            val finalLeft = if (left < 0) paddingLeft else left
+            val finalTop = if (top < 0) paddingTop else top
+            val finalRight = if (right < 0) paddingRight else right
+            val finalBottom = if (bottom < 0) paddingBottom else bottom
 
-            if (left != getPaddingLeft() || top != getPaddingTop()
-                    || right != getPaddingRight() || bottom != getPaddingBottom())
-            {
-                super.setPadding(left, top, right, bottom);
+            if (finalLeft != paddingLeft ||
+                finalTop != paddingTop ||
+                finalRight != paddingRight ||
+                finalBottom != paddingBottom
+            ) {
+                super.setPadding(finalLeft, finalTop, finalRight, finalBottom)
             }
         }
 
-        @Override
-        public void setVisibility(int visibility)
-        {
-            if (visibility == GONE || visibility == INVISIBLE)
-            {
-                throw new IllegalArgumentException("you can not hide container");
+        override fun setVisibility(visibility: Int) {
+            if (visibility == GONE || visibility == INVISIBLE) {
+                throw RuntimeException("can not hide container")
             }
-            super.setVisibility(visibility);
+            super.setVisibility(visibility)
         }
 
-        @Override
-        public void onViewAdded(View child)
-        {
-            super.onViewAdded(child);
-            if (child != mContentView)
-            {
-                throw new RuntimeException("you can not add view to container");
+        override fun onViewAdded(child: View) {
+            super.onViewAdded(child)
+            if (child !== _contentView) {
+                throw RuntimeException("can not add view to container")
             }
-
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "onContentViewAdded:" + child);
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "onContentViewAdded:${child}")
             }
         }
 
-        @Override
-        public void onViewRemoved(View child)
-        {
-            super.onViewRemoved(child);
-            if (child == mContentView)
-            {
+        override fun onViewRemoved(child: View) {
+            super.onViewRemoved(child)
+            if (child === _contentView) {
                 // 外部直接移除内容view的话，关闭窗口
-                dismiss();
+                dismiss()
             }
-
-            if (mIsDebug)
-            {
-                Log.i(IDialog.class.getSimpleName(), "onContentViewRemoved:" + child);
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "onContentViewRemoved:${child}")
             }
         }
 
-        @Override
-        protected void onLayout(boolean changed, int l, int t, int r, int b)
-        {
-            super.onLayout(changed, l, t, r, b);
-            if (changed)
-            {
-                Utils.checkMatchLayoutParams(this);
+        override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+            super.onLayout(changed, l, t, r, b)
+            if (changed) {
+                Utils.checkMatchLayoutParams(this)
             }
-            startShowAnimator();
+            startShowAnimator()
         }
 
-        @Override
-        protected void onAttachedToWindow()
-        {
-            super.onAttachedToWindow();
-            if (_state.isShowPart())
-            {
-                setTryStartShowAnimator(true);
-                startShowAnimator();
+        override fun onAttachedToWindow() {
+            super.onAttachedToWindow()
+            if (_state.isShowPart) {
+                setTryStartShowAnimator(true)
+                startShowAnimator()
             }
         }
     }
 
-    private final class InternalBackgroundView extends View
-    {
-        public InternalBackgroundView(Context context)
-        {
-            super(context);
-            setBackgroundColor(Color.TRANSPARENT);
+    private inner class InternalBackgroundView(context: Context?) : View(context) {
+        init {
+            setBackgroundColor(Color.TRANSPARENT)
         }
     }
 
-    private void showDialog()
-    {
-        if (mIsDebug)
-        {
-            Log.e(IDialog.class.getSimpleName(), "showDialog");
+    private fun showDialog() {
+        if (isDebug) {
+            Log.e(IDialog::class.java.simpleName, "showDialog")
         }
 
-        try
-        {
-            final ViewGroup container = mActivity.findViewById(android.R.id.content);
-            container.addView(_dialogView,
-                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-            setState(State.Shown);
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            if (mIsDebug)
-            {
-                Log.e(IDialog.class.getSimpleName(), "showDialog error:" + e);
+        try {
+            val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
+            container.addView(
+                _dialogView,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            )
+            setState(State.Shown)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (isDebug) {
+                Log.e(IDialog::class.java.simpleName, "showDialog error:${e}")
             }
-            dismissDialog(false);
+            dismissDialog(false)
         }
     }
 
-    private void dismissDialog(boolean isAnimator)
-    {
-        if (mIsDebug)
-        {
-            Log.e(IDialog.class.getSimpleName(), "dismissDialog by animator:" + isAnimator);
+    private fun dismissDialog(isAnimator: Boolean) {
+        if (isDebug) {
+            Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator}")
         }
 
-        try
-        {
-            final ViewGroup container = mActivity.findViewById(android.R.id.content);
-            container.removeView(_dialogView);
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            if (mIsDebug)
-            {
-                Log.e(IDialog.class.getSimpleName(), "dismissDialog error:" + e);
+        try {
+            val container = ownerActivity.findViewById<ViewGroup>(android.R.id.content)
+            container.removeView(_dialogView)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (isDebug) {
+                Log.e(IDialog::class.java.simpleName, "dismissDialog error:${e}")
             }
-        } finally
-        {
-            setState(State.Dismissed);
+        } finally {
+            setState(State.Dismissed)
         }
     }
 
-    private void notifyStart()
-    {
-        if (mIsDebug)
-        {
-            Log.i(IDialog.class.getSimpleName(), "notifyStart");
+    private fun notifyStart() {
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyStart")
         }
 
-        getActivityLifecycleCallbacks().register(true);
-        FDialogHolder.addDialog(FDialog.this);
+        activityLifecycleCallbacks.register(true)
+        FDialogHolder.addDialog(this@FDialog)
 
-        FDialog.this.onStart();
-        if (mTargetDialog != null)
-        {
-            mTargetDialog.onStart();
+        onStart()
+        if (_targetDialog != null) {
+            _targetDialog!!.onStart()
         }
 
-        setLockDialog(false);
-        setDefaultConfigBeforeShow();
+        setLockDialog(false)
+        setDefaultConfigBeforeShow()
 
-        getDialogHandler().post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (mOnShowListener != null)
-                {
-                    mOnShowListener.onShow(FDialog.this);
+        _dialogHandler.post {
+            if (_onShowListener != null) {
+                _onShowListener!!.onShow(this@FDialog)
+            }
+        }
+    }
+
+    private fun notifyStop() {
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyStop")
+        }
+
+        activityLifecycleCallbacks.register(false)
+        FDialogHolder.removeDialog(this@FDialog)
+
+        stopDismissRunnable()
+        onStop()
+        if (_targetDialog != null) {
+            _targetDialog!!.onStop()
+        }
+
+        if (_isAnimatorCreatorModifiedInternal) {
+            animatorCreator = null
+        }
+
+        _dialogHandler.post {
+            if (_onDismissListener != null) {
+                _onDismissListener!!.onDismiss(this@FDialog)
+            }
+        }
+    }
+
+    private var mActivityLifecycleCallbacks: InternalActivityLifecycleCallbacks? = null
+    private val activityLifecycleCallbacks: InternalActivityLifecycleCallbacks
+        private get() {
+            if (mActivityLifecycleCallbacks == null) {
+                mActivityLifecycleCallbacks = InternalActivityLifecycleCallbacks()
+            }
+            return mActivityLifecycleCallbacks!!
+        }
+
+    private inner class InternalActivityLifecycleCallbacks : ActivityLifecycleCallbacks {
+        fun register(register: Boolean) {
+            val application = ownerActivity.application
+            application.unregisterActivityLifecycleCallbacks(this)
+            if (register) {
+                application.registerActivityLifecycleCallbacks(this)
+            }
+        }
+
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+        override fun onActivityStarted(activity: Activity) {}
+        override fun onActivityResumed(activity: Activity) {}
+        override fun onActivityPaused(activity: Activity) {}
+        override fun onActivityStopped(activity: Activity) {}
+        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+        override fun onActivityDestroyed(activity: Activity) {
+            if (activity === ownerActivity) {
+                if (isDebug) {
+                    Log.e(IDialog::class.java.simpleName, "onActivityDestroyed")
                 }
-            }
-        });
-    }
-
-    private void notifyStop()
-    {
-        if (mIsDebug)
-        {
-            Log.i(IDialog.class.getSimpleName(), "notifyStop");
-        }
-
-        getActivityLifecycleCallbacks().register(false);
-        FDialogHolder.removeDialog(FDialog.this);
-
-        stopDismissRunnable();
-
-        FDialog.this.onStop();
-        if (mTargetDialog != null)
-        {
-            mTargetDialog.onStop();
-        }
-
-        if (_isAnimatorCreatorModifiedInternal)
-        {
-            setAnimatorCreator(null);
-        }
-
-        getDialogHandler().post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (mOnDismissListener != null)
-                {
-                    mOnDismissListener.onDismiss(FDialog.this);
-                }
-            }
-        });
-    }
-
-    private InternalActivityLifecycleCallbacks mActivityLifecycleCallbacks;
-
-    private InternalActivityLifecycleCallbacks getActivityLifecycleCallbacks()
-    {
-        if (mActivityLifecycleCallbacks == null)
-        {
-            mActivityLifecycleCallbacks = new InternalActivityLifecycleCallbacks();
-        }
-        return mActivityLifecycleCallbacks;
-    }
-
-    private final class InternalActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks
-    {
-        public void register(boolean register)
-        {
-            final Application application = mActivity.getApplication();
-            application.unregisterActivityLifecycleCallbacks(this);
-            if (register)
-            {
-                application.registerActivityLifecycleCallbacks(this);
-            }
-        }
-
-        @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState)
-        {
-        }
-
-        @Override
-        public void onActivityStarted(Activity activity)
-        {
-        }
-
-        @Override
-        public void onActivityResumed(Activity activity)
-        {
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity)
-        {
-        }
-
-        @Override
-        public void onActivityStopped(Activity activity)
-        {
-        }
-
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState)
-        {
-        }
-
-        @Override
-        public void onActivityDestroyed(Activity activity)
-        {
-            if (activity == mActivity)
-            {
-                if (mIsDebug)
-                {
-                    Log.e(IDialog.class.getSimpleName(), "onActivityDestroyed");
-                }
-
-                FDialogHolder.remove(getOwnerActivity());
-                dismiss();
+                FDialogHolder.remove(ownerActivity)
+                dismiss()
             }
         }
     }
 
-    /**
-     * 返回Activity的所有窗口
-     */
-    public static List<FDialog> getAll(Activity activity)
-    {
-        return FDialogHolder.get(activity);
-    }
-
-    /**
-     * 关闭指定Activity的所有窗口
-     */
-    public static void dismissAll(Activity activity)
-    {
-        if (activity.isFinishing())
-        {
-            return;
+    companion object {
+        /**
+         * 返回Activity的所有窗口
+         */
+        fun getAll(activity: Activity?): List<FDialog>? {
+            return FDialogHolder[activity!!]
         }
 
-        final List<FDialog> list = getAll(activity);
-        if (list == null || list.isEmpty())
-        {
-            return;
-        }
-
-        for (FDialog item : list)
-        {
-            item.dismiss();
+        /**
+         * 关闭指定Activity的所有窗口
+         */
+        fun dismissAll(activity: Activity) {
+            if (activity.isFinishing) {
+                return
+            }
+            val list = getAll(activity)
+            if (list == null || list.isEmpty()) {
+                return
+            }
+            for (item in list) {
+                item.dismiss()
+            }
         }
     }
+}
 
-    private enum State
-    {
-        TryShow,
-        Shown,
+private enum class State {
+    TryShow, Shown, TryDismiss, Dismissed;
 
-        TryDismiss,
-        Dismissed;
+    val isShowPart: Boolean
+        get() = this == Shown || this == TryShow
 
-        public boolean isShowPart()
-        {
-            return this == Shown || this == TryShow;
-        }
-
-        public boolean isDismissPart()
-        {
-            return this == Dismissed || this == TryDismiss;
-        }
-    }
+    val isDismissPart: Boolean
+        get() = this == Dismissed || this == TryDismiss
 }

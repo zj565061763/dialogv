@@ -7,9 +7,9 @@ import com.sd.lib.dialog.animator.AnimatorCreator
 
 interface IDialog {
     /**
-     * 设置调试模式，内部会输出日志，日志tag：IDialog
+     * 调试模式，内部会输出日志，日志tag：IDialog
      */
-    fun setDebug(debug: Boolean)
+    var isDebug: Boolean
 
     /**
      * 返回Context对象
@@ -27,6 +27,11 @@ interface IDialog {
     var animatorCreator: AnimatorCreator?
 
     /**
+     * 重力属性[android.view.Gravity]
+     */
+    var gravity: Int
+
+    /**
      * 返回窗口的内容view
      */
     fun getContentView(): View?
@@ -42,14 +47,14 @@ interface IDialog {
     fun setContentView(view: View?)
 
     /**
-     * 设置背景是否模糊
-     */
-    fun setBackgroundDim(backgroundDim: Boolean)
-
-    /**
      * 根据id查找view
      */
     fun <T : View> findViewById(id: Int): T?
+
+    /**
+     * 设置背景模糊
+     */
+    fun setBackgroundDim(dim: Boolean)
 
     /**
      * 设置触摸到非内容view区域是否关闭窗口，默认true
@@ -70,11 +75,6 @@ interface IDialog {
      * 设置动画时长
      */
     fun setAnimatorDuration(duration: Long)
-
-    /**
-     * 重力属性[android.view.Gravity]
-     */
-    var gravity: Int
 
     /**
      * 设置上下左右间距，如果某个方向的值小于0，则该方向的padding保持原有的值不变
@@ -131,7 +131,7 @@ interface IDialog {
     /**
      * 返回[ITargetDialog]对象
      */
-    fun target(): ITargetDialog?
+    fun target(): ITargetDialog
 
     /**
      * 关闭监听
