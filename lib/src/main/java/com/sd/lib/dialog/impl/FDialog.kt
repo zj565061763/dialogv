@@ -723,7 +723,7 @@ open class FDialog : IDialog {
             Log.i(IDialog::class.java.simpleName, "notifyStart")
         }
 
-        activityLifecycleCallbacks.register(true)
+        _activityLifecycleCallbacks.register(true)
         FDialogHolder.addDialog(this@FDialog)
 
         onStart()
@@ -738,7 +738,7 @@ open class FDialog : IDialog {
             Log.i(IDialog::class.java.simpleName, "notifyStop")
         }
 
-        activityLifecycleCallbacks.register(false)
+        _activityLifecycleCallbacks.register(false)
         FDialogHolder.removeDialog(this@FDialog)
 
         onStop()
@@ -749,14 +749,9 @@ open class FDialog : IDialog {
         }
     }
 
-    private var mActivityLifecycleCallbacks: InternalActivityLifecycleCallbacks? = null
-    private val activityLifecycleCallbacks: InternalActivityLifecycleCallbacks
-        private get() {
-            if (mActivityLifecycleCallbacks == null) {
-                mActivityLifecycleCallbacks = InternalActivityLifecycleCallbacks()
-            }
-            return mActivityLifecycleCallbacks!!
-        }
+    private val _activityLifecycleCallbacks by lazy {
+        InternalActivityLifecycleCallbacks()
+    }
 
     private inner class InternalActivityLifecycleCallbacks : ActivityLifecycleCallbacks {
         fun register(register: Boolean) {
@@ -775,11 +770,11 @@ open class FDialog : IDialog {
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 
         override fun onActivityDestroyed(activity: Activity) {
-            if (activity === ownerActivity) {
+            if (activity === _activity) {
                 if (isDebug) {
                     Log.e(IDialog::class.java.simpleName, "onActivityDestroyed")
                 }
-                FDialogHolder.remove(ownerActivity)
+                FDialogHolder.remove(activity)
                 dismiss()
             }
         }
@@ -789,21 +784,21 @@ open class FDialog : IDialog {
         /**
          * 返回Activity的所有窗口
          */
+        @JvmStatic
         fun getAll(activity: Activity?): List<FDialog>? {
-            return FDialogHolder[activity!!]
+            if (activity == null) return null
+            return FDialogHolder.get(activity)
         }
 
         /**
          * 关闭指定Activity的所有窗口
          */
-        fun dismissAll(activity: Activity) {
-            if (activity.isFinishing) {
-                return
-            }
-            val list = getAll(activity)
-            if (list == null || list.isEmpty()) {
-                return
-            }
+        @JvmStatic
+        fun dismissAll(activity: Activity?) {
+            if (activity == null) return
+            if (activity.isFinishing) return
+
+            val list = getAll(activity) ?: return
             for (item in list) {
                 item.dismiss()
             }
@@ -812,7 +807,11 @@ open class FDialog : IDialog {
 }
 
 private enum class State {
-    TryShow, Shown, TryDismiss, Dismissed;
+    TryShow,
+    Shown,
+
+    TryDismiss,
+    Dismissed;
 
     val isShowPart: Boolean
         get() = this == Shown || this == TryShow

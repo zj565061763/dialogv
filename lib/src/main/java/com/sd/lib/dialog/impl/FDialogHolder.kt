@@ -29,7 +29,7 @@ internal object FDialogHolder {
     }
 
     @JvmStatic
-    operator fun get(activity: Activity): List<FDialog>? {
+    fun get(activity: Activity): List<FDialog>? {
         val holder = mapActivityDialog[activity] ?: return null
         return ArrayList(holder)
     }
