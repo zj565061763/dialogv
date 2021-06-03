@@ -37,20 +37,15 @@ public class FDialog implements IDialog
 {
     private final Activity mActivity;
 
-    private final InternalDialogView mDialogView;
-    private final LinearLayout mContainerView;
-    private final View mBackgroundView;
+    private final InternalDialogView _dialogView;
+    private final LinearLayout _containerView;
+    private final View _backgroundView;
     private View mContentView;
 
-    private boolean mCanceledOnTouchOutside = true;
+    private State _state = State.Dismissed;
+
     private int mGravity = Gravity.NO_GRAVITY;
-
-    private State mState = State.Dismissed;
-
-    private OnDismissListener mOnDismissListener;
-    private OnShowListener mOnShowListener;
-
-    private boolean mLockDialog;
+    private boolean mCanceledOnTouchOutside = true;
     private boolean mIsBackgroundDim;
 
     private FVisibilityAnimatorHandler mAnimatorHandler;
@@ -58,8 +53,12 @@ public class FDialog implements IDialog
     private AnimatorCreator mBackgroundViewAnimatorCreator;
     private long mAnimatorDuration;
 
-    private boolean mTryStartShowAnimator;
-    private boolean mIsAnimatorCreatorModifiedInternal;
+    private boolean _lockDialog;
+    private boolean _tryStartShowAnimator;
+    private boolean _isAnimatorCreatorModifiedInternal;
+
+    private OnDismissListener mOnDismissListener;
+    private OnShowListener mOnShowListener;
 
     private boolean mIsDebug;
 
@@ -72,9 +71,9 @@ public class FDialog implements IDialog
 
         mActivity = activity;
 
-        mDialogView = new InternalDialogView(activity);
-        mContainerView = mDialogView.mContainerView;
-        mBackgroundView = mDialogView.mBackgroundView;
+        _dialogView = new InternalDialogView(activity);
+        _containerView = _dialogView.mContainerView;
+        _backgroundView = _dialogView.mBackgroundView;
 
         final int defaultPadding = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.1f);
         setPadding(defaultPadding, 0, defaultPadding, 0);
@@ -110,7 +109,7 @@ public class FDialog implements IDialog
     @Override
     public void setContentView(int layoutId)
     {
-        final View view = LayoutInflater.from(mActivity).inflate(layoutId, mContainerView, false);
+        final View view = LayoutInflater.from(mActivity).inflate(layoutId, _containerView, false);
         setContentView(view);
     }
 
@@ -129,10 +128,10 @@ public class FDialog implements IDialog
             if (backgroundDim)
             {
                 final int color = mActivity.getResources().getColor(R.color.lib_dialog_background_dim);
-                mBackgroundView.setBackgroundColor(color);
+                _backgroundView.setBackgroundColor(color);
             } else
             {
-                mBackgroundView.setBackgroundColor(0);
+                _backgroundView.setBackgroundColor(0);
             }
         }
     }
@@ -146,7 +145,7 @@ public class FDialog implements IDialog
 
             if (old != null)
             {
-                mContainerView.removeView(old);
+                _containerView.removeView(old);
             }
 
             if (view != null)
@@ -161,7 +160,7 @@ public class FDialog implements IDialog
                     p.height = params.height;
                 }
 
-                mContainerView.addView(view, p);
+                _containerView.addView(view, p);
             }
 
             if (mIsDebug)
@@ -209,7 +208,7 @@ public class FDialog implements IDialog
     public void setAnimatorCreator(AnimatorCreator creator)
     {
         mAnimatorCreator = creator;
-        mIsAnimatorCreatorModifiedInternal = false;
+        _isAnimatorCreatorModifiedInternal = false;
     }
 
     @Override
@@ -227,7 +226,7 @@ public class FDialog implements IDialog
     @Override
     public void setGravity(int gravity)
     {
-        mContainerView.setGravity(gravity);
+        _containerView.setGravity(gravity);
     }
 
     @Override
@@ -239,37 +238,37 @@ public class FDialog implements IDialog
     @Override
     public void setPadding(int left, int top, int right, int bottom)
     {
-        mContainerView.setPadding(left, top, right, bottom);
+        _containerView.setPadding(left, top, right, bottom);
     }
 
     @Override
     public int getPaddingLeft()
     {
-        return mContainerView.getPaddingLeft();
+        return _containerView.getPaddingLeft();
     }
 
     @Override
     public int getPaddingTop()
     {
-        return mContainerView.getPaddingTop();
+        return _containerView.getPaddingTop();
     }
 
     @Override
     public int getPaddingRight()
     {
-        return mContainerView.getPaddingRight();
+        return _containerView.getPaddingRight();
     }
 
     @Override
     public int getPaddingBottom()
     {
-        return mContainerView.getPaddingBottom();
+        return _containerView.getPaddingBottom();
     }
 
     @Override
     public boolean isShowing()
     {
-        return mState == State.Shown;
+        return _state == State.Shown;
     }
 
     @Override
@@ -314,7 +313,7 @@ public class FDialog implements IDialog
                 return;
             }
 
-            if (mState.isShowPart())
+            if (_state.isShowPart())
             {
                 return;
             }
@@ -362,7 +361,7 @@ public class FDialog implements IDialog
                 return;
             }
 
-            if (mState.isDismissPart())
+            if (_state.isDismissPart())
             {
                 return;
             }
@@ -393,9 +392,9 @@ public class FDialog implements IDialog
 
     private void setLockDialog(boolean lock)
     {
-        if (mLockDialog != lock)
+        if (_lockDialog != lock)
         {
-            mLockDialog = lock;
+            _lockDialog = lock;
             if (mIsDebug)
             {
                 Log.i(IDialog.class.getSimpleName(), "setLockDialog:" + lock);
@@ -405,9 +404,9 @@ public class FDialog implements IDialog
 
     private void setTryStartShowAnimator(boolean tryShow)
     {
-        if (mTryStartShowAnimator != tryShow)
+        if (_tryStartShowAnimator != tryShow)
         {
-            mTryStartShowAnimator = tryShow;
+            _tryStartShowAnimator = tryShow;
             if (mIsDebug)
             {
                 Log.i(IDialog.class.getSimpleName(), "setTryStartShowAnimator:" + tryShow);
@@ -417,10 +416,10 @@ public class FDialog implements IDialog
 
     private void startShowAnimator()
     {
-        if (mTryStartShowAnimator)
+        if (_tryStartShowAnimator)
         {
-            final int width = mContainerView.getWidth();
-            final int height = mContainerView.getHeight();
+            final int width = _containerView.getWidth();
+            final int height = _containerView.getHeight();
             if (mIsDebug)
             {
                 Log.i(IDialog.class.getSimpleName(), "startShowAnimator width:" + width + " height:" + height);
@@ -442,9 +441,9 @@ public class FDialog implements IDialog
             throw new IllegalArgumentException("state is null");
         }
 
-        if (mState != state)
+        if (_state != state)
         {
-            mState = state;
+            _state = state;
             if (mIsDebug)
             {
                 Log.e(IDialog.class.getSimpleName(), "setState:" + state);
@@ -498,27 +497,27 @@ public class FDialog implements IDialog
             {
                 case Gravity.CENTER:
                     setAnimatorCreator(new AlphaCreator());
-                    mIsAnimatorCreatorModifiedInternal = true;
+                    _isAnimatorCreatorModifiedInternal = true;
                     break;
                 case Gravity.LEFT:
                 case Gravity.LEFT | Gravity.CENTER:
                     setAnimatorCreator(new SlideRightLeftParentCreator());
-                    mIsAnimatorCreatorModifiedInternal = true;
+                    _isAnimatorCreatorModifiedInternal = true;
                     break;
                 case Gravity.TOP:
                 case Gravity.TOP | Gravity.CENTER:
                     setAnimatorCreator(new SlideBottomTopParentCreator());
-                    mIsAnimatorCreatorModifiedInternal = true;
+                    _isAnimatorCreatorModifiedInternal = true;
                     break;
                 case Gravity.RIGHT:
                 case Gravity.RIGHT | Gravity.CENTER:
                     setAnimatorCreator(new SlideLeftRightParentCreator());
-                    mIsAnimatorCreatorModifiedInternal = true;
+                    _isAnimatorCreatorModifiedInternal = true;
                     break;
                 case Gravity.BOTTOM:
                 case Gravity.BOTTOM | Gravity.CENTER:
                     setAnimatorCreator(new SlideTopBottomParentCreator());
-                    mIsAnimatorCreatorModifiedInternal = true;
+                    _isAnimatorCreatorModifiedInternal = true;
                     break;
             }
         }
@@ -607,13 +606,13 @@ public class FDialog implements IDialog
         {
             if (mIsBackgroundDim)
             {
-                animatorBackground = getBackgroundViewAnimatorCreator().createAnimator(true, mBackgroundView);
+                animatorBackground = getBackgroundViewAnimatorCreator().createAnimator(true, _backgroundView);
             }
         } else
         {
             if (mIsBackgroundDim)
             {
-                animatorBackground = getBackgroundViewAnimatorCreator().createAnimator(false, mBackgroundView);
+                animatorBackground = getBackgroundViewAnimatorCreator().createAnimator(false, _backgroundView);
             }
         }
 
@@ -797,7 +796,7 @@ public class FDialog implements IDialog
         @Override
         public boolean onInterceptTouchEvent(MotionEvent ev)
         {
-            if (mLockDialog)
+            if (_lockDialog)
             {
                 return true;
             }
@@ -807,7 +806,7 @@ public class FDialog implements IDialog
         @Override
         public boolean onTouchEvent(MotionEvent event)
         {
-            if (mLockDialog)
+            if (_lockDialog)
             {
                 return true;
             }
@@ -996,7 +995,7 @@ public class FDialog implements IDialog
         protected void onAttachedToWindow()
         {
             super.onAttachedToWindow();
-            if (mState.isShowPart())
+            if (_state.isShowPart())
             {
                 setTryStartShowAnimator(true);
                 startShowAnimator();
@@ -1023,7 +1022,7 @@ public class FDialog implements IDialog
         try
         {
             final ViewGroup container = mActivity.findViewById(android.R.id.content);
-            container.addView(mDialogView,
+            container.addView(_dialogView,
                     new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
             setState(State.Shown);
@@ -1048,7 +1047,7 @@ public class FDialog implements IDialog
         try
         {
             final ViewGroup container = mActivity.findViewById(android.R.id.content);
-            container.removeView(mDialogView);
+            container.removeView(_dialogView);
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -1112,7 +1111,7 @@ public class FDialog implements IDialog
             mTargetDialog.onStop();
         }
 
-        if (mIsAnimatorCreatorModifiedInternal)
+        if (_isAnimatorCreatorModifiedInternal)
         {
             setAnimatorCreator(null);
         }
