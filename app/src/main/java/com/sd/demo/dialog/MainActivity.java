@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.setPadding(0, 0, 0, 0);
 
         /**
-         * 设置调试模式，内部会输出日志，日志tag：Dialoger
+         * 设置调试模式，内部会输出日志，日志tag：IDialog
          */
         dialog.setDebug(true);
         /**
