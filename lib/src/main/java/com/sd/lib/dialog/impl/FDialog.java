@@ -622,7 +622,7 @@ public class FDialog implements IDialog
 
         if (animatorBackground != null && animatorContent != null)
         {
-            final long duration = getAnimatorDuration(animatorContent);
+            final long duration = Utils.getAnimatorDuration(animatorContent);
             if (duration < 0)
             {
                 throw new RuntimeException("Illegal duration:" + duration);
@@ -814,7 +814,11 @@ public class FDialog implements IDialog
 
             if (event.getAction() == MotionEvent.ACTION_DOWN)
             {
-                if (!isViewUnder(mContentView, (int) event.getX(), (int) event.getY()))
+                final boolean isViewUnder = Utils.isViewUnder(mContentView, (int) event.getX(), (int) event.getY());
+                if (isViewUnder)
+                {
+                    // 不处理
+                } else
                 {
                     onTouchOutside(event);
                     if (mCanceledOnTouchOutside)
@@ -983,7 +987,7 @@ public class FDialog implements IDialog
             super.onLayout(changed, l, t, r, b);
             if (changed)
             {
-                checkMatchLayoutParams(this);
+                Utils.checkMatchLayoutParams(this);
             }
             startShowAnimator();
         }
@@ -1006,16 +1010,6 @@ public class FDialog implements IDialog
         {
             super(context);
             setBackgroundColor(Color.TRANSPARENT);
-        }
-
-        @Override
-        protected void onLayout(boolean changed, int left, int top, int right, int bottom)
-        {
-            super.onLayout(changed, left, top, right, bottom);
-            if (changed)
-            {
-                checkMatchLayoutParams(this);
-            }
         }
     }
 
@@ -1251,55 +1245,6 @@ public class FDialog implements IDialog
         public boolean isDismissPart()
         {
             return this == Dismissed || this == TryDismiss;
-        }
-    }
-
-    private static long getAnimatorDuration(Animator animator)
-    {
-        long duration = animator.getDuration();
-        if (duration > 0)
-        {
-            return duration;
-        }
-
-        if (animator instanceof AnimatorSet)
-        {
-            final List<Animator> list = ((AnimatorSet) animator).getChildAnimations();
-            for (Animator item : list)
-            {
-                final long durationItem = getAnimatorDuration(item);
-                if (durationItem > duration)
-                {
-                    duration = durationItem;
-                }
-            }
-        }
-        return duration;
-    }
-
-    private static boolean isViewUnder(View view, int x, int y)
-    {
-        if (view == null)
-        {
-            return false;
-        }
-        return x >= view.getLeft() && x < view.getRight()
-                && y >= view.getTop() && y < view.getBottom();
-    }
-
-    private static void checkMatchLayoutParams(View view)
-    {
-        final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-        if (params.width != ViewGroup.LayoutParams.MATCH_PARENT
-                || params.height != ViewGroup.LayoutParams.MATCH_PARENT)
-        {
-            throw new RuntimeException("you can not change view's width or height");
-        }
-
-        if (params.leftMargin != 0 || params.rightMargin != 0
-                || params.topMargin != 0 || params.bottomMargin != 0)
-        {
-            throw new RuntimeException("you can not set margin to view");
         }
     }
 }
