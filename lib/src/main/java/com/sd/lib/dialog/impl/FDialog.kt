@@ -513,6 +513,10 @@ open class FDialog : IDialog {
         return _targetDialogLazy
     }
 
+    internal fun checkFocus(check: Boolean) {
+        _dialogView.checkFocus(check)
+    }
+
     private inner class InternalDialogView(context: Context) : FrameLayout(context) {
         private val KEY_SUPER_STATE = "InternalDialogView_super_onSaveInstanceState"
 
