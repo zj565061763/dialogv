@@ -97,6 +97,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             _binding.btnSimple -> {
                 showSimpleDemo()
             }
+            _binding.btnSimpleTwo -> {
+                showSimpleDemo()
+                showSimpleDemo()
+            }
             _binding.btnTarget -> {
                 PositionDialog(this, v).show()
             }

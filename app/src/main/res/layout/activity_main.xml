@@ -18,6 +18,15 @@
             android:text="simple"
             android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/btn_simple_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:onClick="onClick"
+            android:text="simple two"
+            android:textAllCaps="false" />
+
     </LinearLayout>
 
     <Button
