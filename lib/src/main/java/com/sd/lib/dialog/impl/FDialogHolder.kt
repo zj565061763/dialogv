@@ -11,7 +11,7 @@ internal object FDialogHolder {
         val activity = dialog.ownerActivity
         var holder = mapActivityDialog[activity]
         if (holder == null) {
-            holder = HashSet()
+            holder = mutableListOf()
             mapActivityDialog[activity] = holder
         }
         holder.add(dialog)
@@ -32,6 +32,12 @@ internal object FDialogHolder {
     fun get(activity: Activity): List<FDialog>? {
         val holder = mapActivityDialog[activity] ?: return null
         return ArrayList(holder)
+    }
+
+    @JvmStatic
+    fun getLast(activity: Activity): FDialog? {
+        val holder = mapActivityDialog[activity] ?: return null
+        return holder.lastOrNull()
     }
 
     @JvmStatic
