@@ -536,7 +536,7 @@ open class FDialog : IDialog {
             )
         }
 
-        private fun checkFocus(check: Boolean) {
+        fun checkFocus(check: Boolean) {
             removeCallbacks(_checkFocusRunnable)
             if (check) {
                 _checkFocusRunnable.run()
