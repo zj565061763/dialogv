@@ -539,7 +539,7 @@ open class FDialog : IDialog {
         fun checkFocus(check: Boolean) {
             removeCallbacks(_checkFocusRunnable)
             if (check) {
-                _checkFocusRunnable.run()
+                post(_checkFocusRunnable)
             }
         }
 
