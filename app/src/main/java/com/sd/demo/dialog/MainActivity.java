@@ -11,8 +11,6 @@ import com.sd.demo.dialog.databinding.ActivityMainBinding;
 import com.sd.lib.dialog.IDialog;
 import com.sd.lib.dialog.animator.SlideTopBottomParentCreator;
 import com.sd.lib.dialog.impl.FDialog;
-import com.sd.lib.systemui.statusbar.FStatusBar;
-import com.sd.lib.systemui.statusbar.FStatusBarUtils;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -26,14 +24,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         _binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(_binding.getRoot());
-
-        FStatusBar.of(this).setDefaultConfig(new FStatusBar.Config() {
-            @Override
-            public FStatusBar.Brightness getStatusBarBrightness() {
-                return FStatusBar.Brightness.light;
-            }
-        });
-        FStatusBarUtils.setTransparent(this);
     }
 
     private void showSimpleDemo() {
@@ -129,8 +119,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v == _binding.btnSimple) {
             showSimpleDemo();
-        } else if (v == _binding.btnSystemUi) {
-            new SystemUIDialog(this).show();
         } else if (v == _binding.btnTarget) {
             new PositionDialog(this, v).show();
         }
