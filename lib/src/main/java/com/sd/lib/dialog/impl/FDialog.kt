@@ -547,6 +547,7 @@ open class FDialog : IDialog {
                 if (focusedChild !== containerView && FDialogHolder.getLast(_activity) == this@FDialog) {
                     requestChildFocus(containerView, containerView)
                 }
+                postDelayed(this, 500L)
             }
         }
 
@@ -627,7 +628,6 @@ open class FDialog : IDialog {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "onAttachedToWindow")
             }
-
             notifyCreate()
             notifyStart()
             checkFocus(true)
