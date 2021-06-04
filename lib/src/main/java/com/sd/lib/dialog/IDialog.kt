@@ -146,7 +146,7 @@ interface IDialog {
     /**
      * 关闭监听
      */
-    interface OnDismissListener {
+    fun interface OnDismissListener {
         /**
          * 消失后回调
          */
@@ -156,7 +156,7 @@ interface IDialog {
     /**
      * 显示监听
      */
-    interface OnShowListener {
+    fun interface OnShowListener {
         /**
          * 显示后回调
          */
