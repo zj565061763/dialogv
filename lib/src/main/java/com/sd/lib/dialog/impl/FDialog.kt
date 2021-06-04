@@ -536,6 +536,13 @@ open class FDialog : IDialog {
             )
         }
 
+        fun notifyCreate() {
+            if (_shouldNotifyCreate) {
+                _shouldNotifyCreate = false
+                onCreate(_savedInstanceState)
+            }
+        }
+
         fun checkFocus(check: Boolean) {
             removeCallbacks(_checkFocusRunnable)
             if (check) {
@@ -567,13 +574,6 @@ open class FDialog : IDialog {
                 notifyCreate()
             } else {
                 super.onRestoreInstanceState(state)
-            }
-        }
-
-        private fun notifyCreate() {
-            if (_shouldNotifyCreate) {
-                _shouldNotifyCreate = false
-                onCreate(_savedInstanceState)
             }
         }
 
@@ -630,8 +630,6 @@ open class FDialog : IDialog {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "onAttachedToWindow ${this@FDialog}")
             }
-            notifyCreate()
-            notifyStart()
             checkFocus(true)
         }
 
@@ -641,7 +639,6 @@ open class FDialog : IDialog {
                 Log.i(IDialog::class.java.simpleName, "onDetachedFromWindow ${this@FDialog}")
             }
             checkFocus(false)
-            notifyStop()
         }
 
         override fun onViewAdded(child: View) {
@@ -752,6 +749,8 @@ open class FDialog : IDialog {
             Log.e(IDialog::class.java.simpleName, "showDialog ${this@FDialog}")
         }
 
+        _dialogView.notifyCreate()
+        notifyStart()
         display.showDialog(_dialogView)
         setState(State.Shown)
     }
@@ -762,7 +761,9 @@ open class FDialog : IDialog {
         }
 
         stopDismissRunnable()
+
         display.dismissDialog(_dialogView)
+        notifyStop()
         setState(State.Dismissed)
     }
 
