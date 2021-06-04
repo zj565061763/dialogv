@@ -516,9 +516,13 @@ open class FDialog : IDialog {
     private inner class InternalDialogView : FrameLayout {
         private val KEY_SUPER_STATE = "InternalDialogView_super_onSaveInstanceState"
 
-        val backgroundView: View
-        val containerView: LinearLayout
+        lateinit var backgroundView: View
+            private set
 
+        lateinit var containerView: LinearLayout
+            private set
+
+        private var _isAttached = false
         private var _shouldNotifyCreate = true
         private var _savedInstanceState: Bundle? = null
 
@@ -530,9 +534,19 @@ open class FDialog : IDialog {
             addView(containerView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
 
-        fun checkFocus() {
-            rootView.clearFocus()
-            requestChildFocus(containerView, containerView)
+        private fun checkFocus(check: Boolean) {
+            removeCallbacks(_checkFocusRunnable)
+            if (check) {
+                _checkFocusRunnable.run()
+            }
+        }
+
+        private val _checkFocusRunnable = Runnable {
+            if (_isAttached) {
+                if (FDialogHolder.getLast(_activity) == this@FDialog) {
+                    requestChildFocus(containerView, containerView)
+                }
+            }
         }
 
         override fun onSaveInstanceState(): Parcelable? {
@@ -612,9 +626,11 @@ open class FDialog : IDialog {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "onAttachedToWindow")
             }
-            checkFocus()
+            _isAttached = true
+
             notifyCreate()
             notifyStart()
+            checkFocus(_isAttached)
         }
 
         override fun onDetachedFromWindow() {
@@ -622,6 +638,9 @@ open class FDialog : IDialog {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "onDetachedFromWindow")
             }
+            _isAttached = false
+            checkFocus(_isAttached)
+
             notifyStop()
         }
 
