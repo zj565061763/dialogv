@@ -99,7 +99,7 @@ open class FDialog : IDialog {
         }
 
         if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "onContentViewChanged:${old} , ${view}")
+            Log.i(IDialog::class.java.simpleName, "onContentViewChanged:${old} , ${view} ${this@FDialog}")
         }
 
         onContentViewChanged(old, view)
@@ -192,7 +192,7 @@ open class FDialog : IDialog {
     private val _showRunnable = Runnable {
         val isFinishing = ownerActivity.isFinishing
         if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "try show isFinishing:${isFinishing}")
+            Log.i(IDialog::class.java.simpleName, "try show isFinishing:${isFinishing} ${this@FDialog}")
         }
         if (isFinishing) {
             return@Runnable
@@ -205,7 +205,7 @@ open class FDialog : IDialog {
         setState(State.TryShow)
         if (_animatorHandler.isHideAnimatorStarted) {
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "cancel HideAnimator before show")
+                Log.i(IDialog::class.java.simpleName, "cancel HideAnimator before show ${this@FDialog}")
             }
             _animatorHandler.cancelHideAnimator()
         }
@@ -215,7 +215,7 @@ open class FDialog : IDialog {
     private val _dismissRunnable = Runnable {
         val isFinishing = ownerActivity.isFinishing
         if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "try dismiss isFinishing:${isFinishing}")
+            Log.i(IDialog::class.java.simpleName, "try dismiss isFinishing:${isFinishing} ${this@FDialog}")
         }
 
         if (isFinishing) {
@@ -237,7 +237,7 @@ open class FDialog : IDialog {
         setState(State.TryDismiss)
         if (_animatorHandler.isShowAnimatorStarted) {
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "cancel ShowAnimator before dismiss")
+                Log.i(IDialog::class.java.simpleName, "cancel ShowAnimator before dismiss ${this@FDialog}")
             }
             _animatorHandler.cancelShowAnimator()
         }
@@ -255,7 +255,7 @@ open class FDialog : IDialog {
         if (_state != state) {
             _state = state
             if (isDebug) {
-                Log.e(IDialog::class.java.simpleName, "setState:${state}")
+                Log.e(IDialog::class.java.simpleName, "setState:${state} ${this@FDialog}")
             }
 
             if (state.isDismissPart) {
@@ -281,7 +281,7 @@ open class FDialog : IDialog {
         if (_lockDialog != lock) {
             _lockDialog = lock
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "setLockDialog:${lock}")
+                Log.i(IDialog::class.java.simpleName, "setLockDialog:${lock} ${this@FDialog}")
             }
         }
     }
@@ -290,7 +290,7 @@ open class FDialog : IDialog {
         if (_tryStartShowAnimator != tryShow) {
             _tryStartShowAnimator = tryShow
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "setTryStartShowAnimator:${tryShow}")
+                Log.i(IDialog::class.java.simpleName, "setTryStartShowAnimator:${tryShow} ${this@FDialog}")
             }
         }
     }
@@ -301,7 +301,7 @@ open class FDialog : IDialog {
             val height = _dialogView.containerView.height
             if (width > 0 && height > 0) {
                 if (isDebug) {
-                    Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height}")
+                    Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height} ${this@FDialog}")
                 }
                 setTryStartShowAnimator(false)
                 _animatorHandler.setShowAnimator(createAnimator(true))
@@ -358,21 +358,21 @@ open class FDialog : IDialog {
                 override fun onAnimationStart(animation: Animator) {
                     super.onAnimationStart(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "show onAnimationStart ")
+                        Log.i(IDialog::class.java.simpleName, "show onAnimationStart ${this@FDialog}")
                     }
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
                     super.onAnimationCancel(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "show onAnimationCancel ")
+                        Log.i(IDialog::class.java.simpleName, "show onAnimationCancel ${this@FDialog}")
                     }
                 }
 
                 override fun onAnimationEnd(animation: Animator) {
                     super.onAnimationEnd(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "show onAnimationEnd ")
+                        Log.i(IDialog::class.java.simpleName, "show onAnimationEnd ${this@FDialog}")
                     }
                 }
             })
@@ -381,21 +381,21 @@ open class FDialog : IDialog {
                 override fun onAnimationStart(animation: Animator) {
                     super.onAnimationStart(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationStart ")
+                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationStart ${this@FDialog}")
                     }
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
                     super.onAnimationCancel(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationCancel ")
+                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationCancel ${this@FDialog}")
                     }
                 }
 
                 override fun onAnimationEnd(animation: Animator) {
                     super.onAnimationEnd(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationEnd ")
+                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationEnd ${this@FDialog}")
                     }
                     dismissDialog(true)
                 }
@@ -439,7 +439,7 @@ open class FDialog : IDialog {
         if (isDebug) {
             val textIsShow = if (show) "show" else "dismiss"
             val textIsNull = if (animator == null) "null" else "not null"
-            Log.i(IDialog::class.java.simpleName, "createAnimator ${textIsShow} ${textIsNull}")
+            Log.i(IDialog::class.java.simpleName, "createAnimator ${textIsShow} ${textIsNull} ${this@FDialog}")
         }
         return animator
     }
@@ -495,7 +495,7 @@ open class FDialog : IDialog {
     protected open fun onBackPressed() {
         if (_cancelable) {
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "onBackPressed try dismiss")
+                Log.i(IDialog::class.java.simpleName, "onBackPressed try dismiss ${this@FDialog}")
             }
             dismiss()
         }
@@ -511,10 +511,6 @@ open class FDialog : IDialog {
 
     override fun target(): ITargetDialog {
         return _targetDialogLazy
-    }
-
-    internal fun checkFocus(check: Boolean) {
-        _dialogView.checkFocus(check)
     }
 
     private inner class InternalDialogView(context: Context) : FrameLayout(context) {
@@ -613,7 +609,7 @@ open class FDialog : IDialog {
                     onTouchOutside(event)
                     if (_cancelable && _canceledOnTouchOutside) {
                         if (isDebug) {
-                            Log.i(IDialog::class.java.simpleName, "touch outside try dismiss")
+                            Log.i(IDialog::class.java.simpleName, "touch outside try dismiss ${this@FDialog}")
                         }
                         dismiss()
                         return true
@@ -632,7 +628,7 @@ open class FDialog : IDialog {
         override fun onAttachedToWindow() {
             super.onAttachedToWindow()
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "onAttachedToWindow")
+                Log.i(IDialog::class.java.simpleName, "onAttachedToWindow ${this@FDialog}")
             }
             notifyCreate()
             notifyStart()
@@ -642,7 +638,7 @@ open class FDialog : IDialog {
         override fun onDetachedFromWindow() {
             super.onDetachedFromWindow()
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "onDetachedFromWindow")
+                Log.i(IDialog::class.java.simpleName, "onDetachedFromWindow ${this@FDialog}")
             }
             checkFocus(false)
             notifyStop()
@@ -706,7 +702,7 @@ open class FDialog : IDialog {
                 throw RuntimeException("can not add view to container")
             }
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "onContentViewAdded:${child}")
+                Log.i(IDialog::class.java.simpleName, "onContentViewAdded:${child} ${this@FDialog}")
             }
         }
 
@@ -717,7 +713,7 @@ open class FDialog : IDialog {
                 dismiss()
             }
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "onContentViewRemoved:${child}")
+                Log.i(IDialog::class.java.simpleName, "onContentViewRemoved:${child} ${this@FDialog}")
             }
         }
 
@@ -753,7 +749,7 @@ open class FDialog : IDialog {
 
     private fun showDialog() {
         if (isDebug) {
-            Log.e(IDialog::class.java.simpleName, "showDialog")
+            Log.e(IDialog::class.java.simpleName, "showDialog ${this@FDialog}")
         }
 
         display.showDialog(_dialogView)
@@ -762,7 +758,7 @@ open class FDialog : IDialog {
 
     private fun dismissDialog(isAnimator: Boolean) {
         if (isDebug) {
-            Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator}")
+            Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator} ${this@FDialog}")
         }
 
         stopDismissRunnable()
@@ -772,7 +768,7 @@ open class FDialog : IDialog {
 
     private fun notifyStart() {
         if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyStart")
+            Log.i(IDialog::class.java.simpleName, "notifyStart ${this@FDialog}")
         }
 
         _activityLifecycleCallbacks.register(true)
@@ -787,7 +783,7 @@ open class FDialog : IDialog {
 
     private fun notifyStop() {
         if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyStop")
+            Log.i(IDialog::class.java.simpleName, "notifyStop ${this@FDialog}")
         }
 
         _activityLifecycleCallbacks.register(false)
@@ -799,6 +795,20 @@ open class FDialog : IDialog {
         if (_isAnimatorCreatorModifiedInternal) {
             animatorCreator = null
         }
+    }
+
+    internal fun notifyResume() {
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyResume ${this@FDialog}")
+        }
+        _dialogView.checkFocus(true)
+    }
+
+    internal fun notifyPause() {
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyPause ${this@FDialog}")
+        }
+        _dialogView.checkFocus(false)
     }
 
     private val _activityLifecycleCallbacks by lazy {
@@ -824,7 +834,7 @@ open class FDialog : IDialog {
         override fun onActivityDestroyed(activity: Activity) {
             if (activity === _activity) {
                 if (isDebug) {
-                    Log.e(IDialog::class.java.simpleName, "onActivityDestroyed")
+                    Log.e(IDialog::class.java.simpleName, "onActivityDestroyed ${this@FDialog}")
                 }
                 FDialogHolder.remove(activity)
                 dismiss()

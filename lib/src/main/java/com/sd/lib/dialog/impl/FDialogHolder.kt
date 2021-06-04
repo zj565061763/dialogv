@@ -14,6 +14,8 @@ internal object FDialogHolder {
             holder = mutableListOf()
             mapActivityDialog[activity] = holder
         }
+
+        holder.lastOrNull()?.notifyPause()
         holder.add(dialog)
     }
 
@@ -22,7 +24,11 @@ internal object FDialogHolder {
         val activity = dialog.ownerActivity
         val holder = mapActivityDialog[activity] ?: return
 
-        holder.remove(dialog)
+        val remove = holder.remove(dialog)
+        if (remove) {
+            holder.lastOrNull()?.notifyResume()
+        }
+
         if (holder.isEmpty()) {
             mapActivityDialog.remove(activity)
         }
