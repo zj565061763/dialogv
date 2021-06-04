@@ -526,11 +526,12 @@ open class FDialog : IDialog {
         private var _savedInstanceState: Bundle? = null
 
         constructor(context: Context) : super(context) {
-            backgroundView = InternalBackgroundView(context)
-            addView(backgroundView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-
-            containerView = InternalContainerView(context)
-            addView(containerView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            backgroundView = InternalBackgroundView(context).also {
+                addView(it, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            }
+            containerView = InternalContainerView(context).also {
+                addView(it, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            }
         }
 
         private fun checkFocus(check: Boolean) {
