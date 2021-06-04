@@ -3,6 +3,7 @@ package com.sd.demo.dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.dialog.databinding.ActivityMainBinding
@@ -53,7 +54,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         /**
          * 设置窗口要显示的内容
          */
-        dialog.setContentView(Button(this))
+        dialog.setContentView(Button(this).apply {
+            this.layoutParams = ViewGroup.LayoutParams(300, 100)
+        })
         /**
          * 设置窗口关闭监听
          */
