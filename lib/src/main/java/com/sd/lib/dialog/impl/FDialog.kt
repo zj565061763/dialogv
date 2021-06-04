@@ -513,25 +513,27 @@ open class FDialog : IDialog {
         return _targetDialogLazy
     }
 
-    private inner class InternalDialogView : FrameLayout {
+    private inner class InternalDialogView(context: Context) : FrameLayout(context) {
         private val KEY_SUPER_STATE = "InternalDialogView_super_onSaveInstanceState"
 
-        lateinit var backgroundView: View
-            private set
-
-        lateinit var containerView: LinearLayout
-            private set
+        val backgroundView: View
+        val containerView: LinearLayout
 
         private var _shouldNotifyCreate = true
         private var _savedInstanceState: Bundle? = null
 
-        constructor(context: Context) : super(context) {
-            backgroundView = InternalBackgroundView(context).also {
-                addView(it, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-            }
-            containerView = InternalContainerView(context).also {
-                addView(it, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-            }
+        init {
+            backgroundView = InternalBackgroundView(context)
+            addView(
+                backgroundView,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            )
+
+            containerView = InternalContainerView(context)
+            addView(
+                containerView,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            )
         }
 
         private fun checkFocus(check: Boolean) {
