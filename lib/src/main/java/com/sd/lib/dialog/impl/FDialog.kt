@@ -522,7 +522,6 @@ open class FDialog : IDialog {
         lateinit var containerView: LinearLayout
             private set
 
-        private var _isAttached = false
         private var _shouldNotifyCreate = true
         private var _savedInstanceState: Bundle? = null
 
@@ -542,7 +541,7 @@ open class FDialog : IDialog {
         }
 
         private val _checkFocusRunnable = Runnable {
-            if (_isAttached) {
+            if (Utils.isAttached(this@InternalDialogView)) {
                 if (FDialogHolder.getLast(_activity) == this@FDialog) {
                     requestChildFocus(containerView, containerView)
                 }
@@ -626,11 +625,10 @@ open class FDialog : IDialog {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "onAttachedToWindow")
             }
-            _isAttached = true
 
             notifyCreate()
             notifyStart()
-            checkFocus(_isAttached)
+            checkFocus(true)
         }
 
         override fun onDetachedFromWindow() {
@@ -638,9 +636,7 @@ open class FDialog : IDialog {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "onDetachedFromWindow")
             }
-            _isAttached = false
-            checkFocus(_isAttached)
-
+            checkFocus(false)
             notifyStop()
         }
 
