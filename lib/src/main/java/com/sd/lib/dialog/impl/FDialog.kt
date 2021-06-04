@@ -667,7 +667,6 @@ open class FDialog : IDialog {
     }
 
     private inner class InternalContainerView(context: Context) : LinearLayout(context) {
-
         override fun setGravity(gravity: Int) {
             if (_gravity != gravity) {
                 _gravity = gravity
@@ -735,8 +734,8 @@ open class FDialog : IDialog {
         }
     }
 
-    private inner class InternalBackgroundView : View {
-        constructor(context: Context) : super(context) {
+    private inner class InternalBackgroundView(context: Context) : View(context) {
+        init {
             setBackgroundColor(Color.TRANSPARENT)
         }
 
