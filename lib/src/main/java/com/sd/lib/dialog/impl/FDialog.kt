@@ -513,6 +513,74 @@ open class FDialog : IDialog {
         return _targetDialogLazy
     }
 
+    private fun showDialog() {
+        if (isDebug) {
+            Log.e(IDialog::class.java.simpleName, "showDialog ${this@FDialog}")
+        }
+
+        _dialogView.notifyCreate()
+        notifyStart()
+        display.showDialog(_dialogView)
+        setState(State.Shown)
+    }
+
+    private fun dismissDialog(isAnimator: Boolean) {
+        if (isDebug) {
+            Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator} ${this@FDialog}")
+        }
+
+        stopDismissRunnable()
+
+        display.dismissDialog(_dialogView)
+        notifyStop()
+        setState(State.Dismissed)
+    }
+
+    private fun notifyStart() {
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyStart ${this@FDialog}")
+        }
+
+        _activityLifecycleCallbacks.register(true)
+        FDialogHolder.addDialog(this@FDialog)
+
+        onStart()
+        _targetDialog?.onStart()
+
+        setLockDialog(false)
+        setDefaultConfigBeforeShow()
+    }
+
+    private fun notifyStop() {
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyStop ${this@FDialog}")
+        }
+
+        _activityLifecycleCallbacks.register(false)
+        FDialogHolder.removeDialog(this@FDialog)
+
+        onStop()
+        _targetDialog?.onStop()
+
+        if (_isAnimatorCreatorModifiedInternal) {
+            animatorCreator = null
+        }
+    }
+
+    internal fun notifyResume() {
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyResume ${this@FDialog}")
+        }
+        _dialogView.checkFocus(true)
+    }
+
+    internal fun notifyPause() {
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyPause ${this@FDialog}")
+        }
+        _dialogView.checkFocus(false)
+    }
+
     private inner class InternalDialogView(context: Context) : FrameLayout(context) {
         private val KEY_SUPER_STATE = "InternalDialogView_super_onSaveInstanceState"
 
@@ -742,74 +810,6 @@ open class FDialog : IDialog {
                 Utils.checkMatchLayoutParams(this)
             }
         }
-    }
-
-    private fun showDialog() {
-        if (isDebug) {
-            Log.e(IDialog::class.java.simpleName, "showDialog ${this@FDialog}")
-        }
-
-        _dialogView.notifyCreate()
-        notifyStart()
-        display.showDialog(_dialogView)
-        setState(State.Shown)
-    }
-
-    private fun dismissDialog(isAnimator: Boolean) {
-        if (isDebug) {
-            Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator} ${this@FDialog}")
-        }
-
-        stopDismissRunnable()
-
-        display.dismissDialog(_dialogView)
-        notifyStop()
-        setState(State.Dismissed)
-    }
-
-    private fun notifyStart() {
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyStart ${this@FDialog}")
-        }
-
-        _activityLifecycleCallbacks.register(true)
-        FDialogHolder.addDialog(this@FDialog)
-
-        onStart()
-        _targetDialog?.onStart()
-
-        setLockDialog(false)
-        setDefaultConfigBeforeShow()
-    }
-
-    private fun notifyStop() {
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyStop ${this@FDialog}")
-        }
-
-        _activityLifecycleCallbacks.register(false)
-        FDialogHolder.removeDialog(this@FDialog)
-
-        onStop()
-        _targetDialog?.onStop()
-
-        if (_isAnimatorCreatorModifiedInternal) {
-            animatorCreator = null
-        }
-    }
-
-    internal fun notifyResume() {
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyResume ${this@FDialog}")
-        }
-        _dialogView.checkFocus(true)
-    }
-
-    internal fun notifyPause() {
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyPause ${this@FDialog}")
-        }
-        _dialogView.checkFocus(false)
     }
 
     private val _activityLifecycleCallbacks by lazy {
