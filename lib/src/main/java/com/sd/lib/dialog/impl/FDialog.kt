@@ -666,8 +666,7 @@ open class FDialog : IDialog {
         }
     }
 
-    private inner class InternalContainerView : LinearLayout {
-        constructor(context: Context) : super(context)
+    private inner class InternalContainerView(context: Context) : LinearLayout(context) {
 
         override fun setGravity(gravity: Int) {
             if (_gravity != gravity) {
