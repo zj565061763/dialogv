@@ -94,8 +94,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v) {
-            _binding.btnSimple -> showSimpleDemo()
-            _binding.btnTarget -> PositionDialog(this, v).show()
+            _binding.btnSimple -> {
+                showSimpleDemo()
+            }
+            _binding.btnTarget -> {
+                PositionDialog(this, v).show()
+            }
         }
     }
 }
