@@ -15,7 +15,7 @@ internal object FDialogHolder {
             mapActivityDialog[activity] = holder
         }
 
-        holder.lastOrNull()?.notifyPause()
+        holder.lastOrNull()?.notifyCover()
         holder.add(dialog)
     }
 
@@ -26,7 +26,7 @@ internal object FDialogHolder {
 
         val remove = holder.remove(dialog)
         if (remove) {
-            holder.lastOrNull()?.notifyResume()
+            holder.lastOrNull()?.notifyCoverRemove()
         }
 
         if (holder.isEmpty()) {
