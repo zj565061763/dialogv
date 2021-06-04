@@ -530,6 +530,11 @@ open class FDialog : IDialog {
             addView(containerView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
 
+        fun checkFocus() {
+            rootView.clearFocus()
+            requestChildFocus(containerView, containerView)
+        }
+
         override fun onSaveInstanceState(): Parcelable? {
             return Bundle().also { bundle ->
                 this@FDialog.onSaveInstanceState(bundle)
@@ -552,10 +557,6 @@ open class FDialog : IDialog {
                 _shouldNotifyCreate = false
                 onCreate(_savedInstanceState)
             }
-        }
-
-        override fun hasFocus(): Boolean {
-            return true
         }
 
         override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -611,6 +612,7 @@ open class FDialog : IDialog {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "onAttachedToWindow")
             }
+            checkFocus()
             notifyCreate()
             notifyStart()
         }
