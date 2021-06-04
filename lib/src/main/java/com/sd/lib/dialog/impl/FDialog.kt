@@ -567,18 +567,26 @@ open class FDialog : IDialog {
         }
     }
 
+    private var _isCover = false
+
     internal fun notifyCover() {
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyCover ${this@FDialog}")
+        if (!_isCover) {
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "notifyCover ${this@FDialog}")
+            }
+            _isCover = true
+            _dialogView.checkFocus(false)
         }
-        _dialogView.checkFocus(false)
     }
 
     internal fun notifyCoverRemove() {
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyCoverRemove ${this@FDialog}")
+        if (_isCover) {
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "notifyCoverRemove ${this@FDialog}")
+            }
+            _isCover = false
+            _dialogView.checkFocus(true)
         }
-        _dialogView.checkFocus(true)
     }
 
     private inner class InternalDialogView(context: Context) : FrameLayout(context) {
