@@ -354,21 +354,21 @@ open class FDialog : IDialog {
                 override fun onAnimationStart(animation: Animator) {
                     super.onAnimationStart(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "show onAnimationStart ${this@FDialog}")
+                        Log.i(IDialog::class.java.simpleName, "animator show onAnimationStart ${this@FDialog}")
                     }
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
                     super.onAnimationCancel(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "show onAnimationCancel ${this@FDialog}")
+                        Log.i(IDialog::class.java.simpleName, "animator show onAnimationCancel ${this@FDialog}")
                     }
                 }
 
                 override fun onAnimationEnd(animation: Animator) {
                     super.onAnimationEnd(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "show onAnimationEnd ${this@FDialog}")
+                        Log.i(IDialog::class.java.simpleName, "animator show onAnimationEnd ${this@FDialog}")
                     }
                 }
             })
@@ -377,21 +377,21 @@ open class FDialog : IDialog {
                 override fun onAnimationStart(animation: Animator) {
                     super.onAnimationStart(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationStart ${this@FDialog}")
+                        Log.i(IDialog::class.java.simpleName, "animator dismiss onAnimationStart ${this@FDialog}")
                     }
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
                     super.onAnimationCancel(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationCancel ${this@FDialog}")
+                        Log.i(IDialog::class.java.simpleName, "animator dismiss onAnimationCancel ${this@FDialog}")
                     }
                 }
 
                 override fun onAnimationEnd(animation: Animator) {
                     super.onAnimationEnd(animation)
                     if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "dismiss onAnimationEnd ${this@FDialog}")
+                        Log.i(IDialog::class.java.simpleName, "animator dismiss onAnimationEnd ${this@FDialog}")
                     }
                     dismissDialog(true)
                 }
@@ -435,7 +435,7 @@ open class FDialog : IDialog {
         if (isDebug) {
             val textIsShow = if (show) "show" else "dismiss"
             val textIsNull = if (animator == null) "null" else "not null"
-            Log.i(IDialog::class.java.simpleName, "createAnimator ${textIsShow} ${textIsNull} ${this@FDialog}")
+            Log.i(IDialog::class.java.simpleName, "animator ${textIsShow} create ${textIsNull} ${this@FDialog}")
         }
         return animator
     }
