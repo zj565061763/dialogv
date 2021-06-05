@@ -1,28 +1,19 @@
-package com.sd.demo.dialog;
+package com.sd.demo.dialog
 
-import android.app.Activity;
-import android.view.View;
-import android.widget.Toast;
+import android.app.Activity
+import android.view.View
+import android.widget.Toast
+import com.sd.lib.dialog.impl.FDialog
 
-import com.sd.lib.dialog.impl.FDialog;
+class PopDialog(activity: Activity) : FDialog(activity) {
+    init {
+        setPadding(0, 0, 0, 0)
+        setBackgroundDim(false)
+        setContentView(R.layout.dialog_pop)
 
-public class PopDialog extends FDialog {
-    public PopDialog(Activity activity) {
-        super(activity);
-        setDebug(true);
-        setPadding(0, 0, 0, 0);
-        setBackgroundDim(false);
-        setContentView(R.layout.dialog_pop);
-
-        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
-                /**
-                 * 关闭窗口
-                 */
-                dismiss();
-            }
-        });
+        findViewById<View>(R.id.btn)!!.setOnClickListener {
+            Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show()
+            dismiss()
+        }
     }
 }
