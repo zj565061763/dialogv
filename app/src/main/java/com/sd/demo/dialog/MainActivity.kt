@@ -23,14 +23,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun createSimpleDialog(): FDialog {
         val dialog: FDialog = object : FDialog(this@MainActivity) {
-            override fun onContentViewChanged(oldView: View?, contentView: View?) {
-                super.onContentViewChanged(oldView, contentView)
-                Log.i(TAG, "onContentViewChanged oldView:${oldView} contentView:${contentView}")
+            override fun onContentViewChanged(oldView: View?, newView: View?) {
+                super.onContentViewChanged(oldView, newView)
+                Log.i(TAG, "onContentViewChanged oldView:${oldView} newView:${contentView}")
             }
 
-            override fun onCreate(savedInstanceState: Bundle?) {
-                super.onCreate(savedInstanceState)
-                Log.i(TAG, "onCreate savedInstanceState:${savedInstanceState}")
+            override fun onCreate() {
+                super.onCreate()
+                Log.i(TAG, "onCreate")
             }
 
             override fun onStart() {

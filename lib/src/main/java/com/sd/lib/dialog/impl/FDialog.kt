@@ -37,6 +37,7 @@ open class FDialog : IDialog {
     private var _lockDialog = false
     private var _tryStartShowAnimator = false
     private var _isAnimatorCreatorModifiedInternal = false
+    private var _isCreated = false
 
     private var _onDismissListener: IDialog.OnDismissListener? = null
     private var _onShowListener: IDialog.OnShowListener? = null
@@ -471,21 +472,35 @@ open class FDialog : IDialog {
         }
     }
 
-    protected open fun onContentViewChanged(oldView: View?, contentView: View?) {}
+    /**
+     * [contentView]变化回调
+     */
+    protected open fun onContentViewChanged(oldView: View?, newView: View?) {}
 
-    protected open fun onCreate(savedInstanceState: Bundle?) {}
+    /**
+     * 窗口第一次显示之前回调
+     */
+    protected open fun onCreate() {}
 
-    protected open fun onSaveInstanceState(bundle: Bundle?) {}
-
+    /**
+     * 窗口显示之前回调
+     */
     protected open fun onStart() {}
 
+    /**
+     * 窗口消失之后回调
+     */
     protected open fun onStop() {}
 
-    protected open fun onTouchEvent(event: MotionEvent?): Boolean {
+    /**
+     * 触摸回调
+     *
+     * @param isTouchOutside true-触摸[contentView]外部，false-触摸[contentView]内部
+     * @return true-消费掉事件，不会继续分发给[contentView]
+     */
+    protected open fun onTouchEvent(event: MotionEvent, isTouchOutside: Boolean): Boolean {
         return false
     }
-
-    protected open fun onTouchOutside(event: MotionEvent?) {}
 
     protected open fun onBackPressed() {
         if (_cancelable) {
@@ -513,7 +528,11 @@ open class FDialog : IDialog {
             Log.e(IDialog::class.java.simpleName, "showDialog ${this@FDialog}")
         }
 
-        _dialogView.notifyCreate()
+        if (!_isCreated) {
+            _isCreated = true
+            onCreate()
+        }
+
         notifyStart()
         display.showDialog(_dialogView)
         setState(State.Shown)
@@ -585,13 +604,9 @@ open class FDialog : IDialog {
     }
 
     private inner class InternalDialogView(context: Context) : FrameLayout(context) {
-        private val KEY_SUPER_STATE = "InternalDialogView_super_onSaveInstanceState"
-
         val backgroundView: View
         val containerView: LinearLayout
 
-        private var _shouldNotifyCreate = true
-        private var _savedInstanceState: Bundle? = null
         private var _keyDownTime = 0L
 
         init {
@@ -608,13 +623,6 @@ open class FDialog : IDialog {
             )
         }
 
-        fun notifyCreate() {
-            if (_shouldNotifyCreate) {
-                _shouldNotifyCreate = false
-                onCreate(_savedInstanceState)
-            }
-        }
-
         fun checkFocus(check: Boolean) {
             removeCallbacks(_checkFocusRunnable)
             if (check) {
@@ -629,23 +637,6 @@ open class FDialog : IDialog {
                     requestChildFocus(containerView, containerView)
                 }
                 postDelayed(this, 1000L)
-            }
-        }
-
-        override fun onSaveInstanceState(): Parcelable? {
-            return Bundle().also { bundle ->
-                this@FDialog.onSaveInstanceState(bundle)
-                bundle.putParcelable(KEY_SUPER_STATE, super.onSaveInstanceState())
-            }
-        }
-
-        override fun onRestoreInstanceState(state: Parcelable) {
-            if (state is Bundle) {
-                super.onRestoreInstanceState(state.getParcelable(KEY_SUPER_STATE))
-                _savedInstanceState = state
-                notifyCreate()
-            } else {
-                super.onRestoreInstanceState(state)
             }
         }
 
@@ -689,12 +680,9 @@ open class FDialog : IDialog {
                 return true
             }
 
+            val isTouchOutside = !Utils.isViewUnder(_contentView, event.x.toInt(), event.y.toInt())
             if (event.action == MotionEvent.ACTION_DOWN) {
-                val isViewUnder = Utils.isViewUnder(_contentView, event.x.toInt(), event.y.toInt())
-                if (isViewUnder) {
-                    // 不处理
-                } else {
-                    onTouchOutside(event)
+                if (isTouchOutside) {
                     if (_cancelable && _canceledOnTouchOutside) {
                         if (isDebug) {
                             Log.i(IDialog::class.java.simpleName, "touch outside try dismiss ${this@FDialog}")
@@ -705,7 +693,11 @@ open class FDialog : IDialog {
                 }
             }
 
-            if (this@FDialog.onTouchEvent(event)) {
+            if (_lockDialog) {
+                return true
+            }
+
+            if (this@FDialog.onTouchEvent(event, isTouchOutside)) {
                 return true
             }
 
