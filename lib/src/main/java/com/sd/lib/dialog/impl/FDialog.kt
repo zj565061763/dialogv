@@ -603,6 +603,7 @@ open class FDialog : IDialog {
         val backgroundView: View
         val containerView: LinearLayout
 
+        private var _keyCode = 0
         private var _keyDownTime = 0L
 
         init {
@@ -645,6 +646,7 @@ open class FDialog : IDialog {
                     if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE)
                         && !event.isCanceled
                     ) {
+                        _keyCode = keyCode
                         _keyDownTime = event.downTime
                         return true
                     }
@@ -654,8 +656,7 @@ open class FDialog : IDialog {
                     if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE)
                         && !event.isCanceled
                     ) {
-                        if (_keyDownTime == event.downTime) {
-                            _keyDownTime = 0
+                        if (_keyCode == keyCode && _keyDownTime == event.downTime) {
                             onBackPressed()
                             return true
                         }
