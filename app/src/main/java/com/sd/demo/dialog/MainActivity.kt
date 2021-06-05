@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(_binding.root)
     }
 
-    private fun showSimpleDemo() {
+    private fun createSimpleDialog(): FDialog {
         val dialog: FDialog = object : FDialog(this@MainActivity) {
             override fun onContentViewChanged(oldView: View?, contentView: View?) {
                 super.onContentViewChanged(oldView, contentView)
@@ -89,20 +89,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
          * 设置动画时长
          */
         dialog.setAnimatorDuration(1000)
-        /**
-         * 显示窗口
-         */
-        dialog.show()
+        return dialog
     }
 
     override fun onClick(v: View) {
         when (v) {
             _binding.btnSimple -> {
-                showSimpleDemo()
+                createSimpleDialog().show()
             }
             _binding.btnSimpleTwo -> {
-                showSimpleDemo()
-                showSimpleDemo()
+                createSimpleDialog().show()
+                createSimpleDialog().show()
             }
             _binding.btnTarget -> {
                 PositionDialog(this, v).show()

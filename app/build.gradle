@@ -47,6 +47,6 @@ dependencies {
         androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
         implementation project(path: ':lib')
-        implementation 'com.github.zj565061763:systemui:latest.release'
+        implementation 'com.github.zj565061763:utils:1.1.34'
     }
 }
