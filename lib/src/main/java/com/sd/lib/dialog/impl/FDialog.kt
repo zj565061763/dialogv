@@ -107,7 +107,7 @@ open class FDialog : IDialog {
     override fun setBackgroundDim(dim: Boolean) {
         _isBackgroundDim = dim
         if (dim) {
-            val color = context.resources.getColor(R.color.lib_dialog_background_dim)
+            val color = context.resources.getColor(R.color.lib_dialogv_background_dim)
             _dialogView.backgroundView.setBackgroundColor(color)
         } else {
             _dialogView.backgroundView.setBackgroundColor(0)
