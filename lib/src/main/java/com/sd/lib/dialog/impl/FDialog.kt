@@ -37,7 +37,9 @@ open class FDialog : IDialog {
     private var _lockDialog = false
     private var _tryStartShowAnimator = false
     private var _isAnimatorCreatorModifiedInternal = false
+
     private var _isCreated = false
+    private var _isCover = false
 
     private var _onDismissListener: IDialog.OnDismissListener? = null
     private var _onShowListener: IDialog.OnShowListener? = null
@@ -576,8 +578,6 @@ open class FDialog : IDialog {
             animatorCreator = null
         }
     }
-
-    private var _isCover = false
 
     internal fun notifyCover() {
         if (!_isCover) {
