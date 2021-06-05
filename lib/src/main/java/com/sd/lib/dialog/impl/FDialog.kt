@@ -60,9 +60,7 @@ open class FDialog : IDialog {
 
     override val ownerActivity: Activity get() = _activity
 
-    override fun getContentView(): View? {
-        return _contentView
-    }
+    override val contentView: View? get() = _contentView
 
     override fun setContentView(layoutId: Int) {
         val view = if (layoutId == 0) {

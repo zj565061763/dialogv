@@ -37,9 +37,9 @@ interface IDialog {
     var display: Display
 
     /**
-     * 返回窗口的内容view
+     * 窗口的内容view
      */
-    fun getContentView(): View?
+    val contentView: View?
 
     /**
      * 设置窗口的内容view布局id
