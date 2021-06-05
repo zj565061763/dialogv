@@ -94,10 +94,6 @@ open class FDialog : IDialog {
             _dialogView.containerView.addView(view, p)
         }
 
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "onContentViewChanged:${old} , ${view} ${this@FDialog}")
-        }
-
         onContentViewChanged(old, view)
     }
 
