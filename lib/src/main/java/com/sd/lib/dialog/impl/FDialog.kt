@@ -623,6 +623,8 @@ open class FDialog : IDialog {
             removeCallbacks(_checkFocusRunnable)
             if (check) {
                 post(_checkFocusRunnable)
+            } else {
+                clearFocus()
             }
         }
 
