@@ -414,7 +414,7 @@ open class FDialog : IDialog {
             creator.createAnimator(show, view)
         }
 
-        val animator = if (animatorBackground != null && animatorContent != null) {
+        val animator = if (animatorContent != null && animatorBackground != null) {
             val duration = Utils.getAnimatorDuration(animatorContent)
             if (duration < 0) throw RuntimeException("Illegal duration:${duration}")
             animatorBackground.duration = duration
@@ -423,7 +423,7 @@ open class FDialog : IDialog {
                 this.play(animatorBackground).with(animatorContent)
             }
         } else {
-            animatorContent
+            animatorContent ?: animatorBackground
         }
 
         if (_animatorDuration > 0) {
