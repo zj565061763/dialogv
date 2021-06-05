@@ -8,13 +8,9 @@ import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.graphics.Color
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Parcelable
+import android.os.*
 import android.util.Log
 import android.view.*
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.sd.lib.dialog.IDialog
@@ -22,7 +18,6 @@ import com.sd.lib.dialog.ITargetDialog
 import com.sd.lib.dialog.R
 import com.sd.lib.dialog.animator.*
 import com.sd.lib.dialog.display.ActivityDisplay
-import java.lang.ref.WeakReference
 
 open class FDialog : IDialog {
     private val _activity: Activity
@@ -599,8 +594,7 @@ open class FDialog : IDialog {
 
         private var _shouldNotifyCreate = true
         private var _savedInstanceState: Bundle? = null
-
-        private var _focusViewRef: WeakReference<View>? = null
+        private var _keyDownTime = 0L
 
         init {
             backgroundView = InternalBackgroundView(context)
@@ -640,10 +634,6 @@ open class FDialog : IDialog {
             }
         }
 
-        private val _onGlobalFocusChangeListener = ViewTreeObserver.OnGlobalFocusChangeListener { oldFocus, newFocus ->
-            _focusViewRef = if (newFocus == null) null else WeakReference(newFocus)
-        }
-
         override fun onSaveInstanceState(): Parcelable? {
             return Bundle().also { bundle ->
                 this@FDialog.onSaveInstanceState(bundle)
@@ -662,15 +652,26 @@ open class FDialog : IDialog {
         }
 
         override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-            if (event.action == KeyEvent.ACTION_UP) {
-                val keyCode = event.keyCode
-                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
-                    val focusView = _focusViewRef?.get()
-                    if (focusView is EditText) {
-                        // TODO 判断是否需要关闭输入法
-                    } else {
-                        onBackPressed()
+            val keyCode = event.keyCode
+            when (event.action) {
+                KeyEvent.ACTION_DOWN -> {
+                    if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE)
+                        && !event.isCanceled
+                    ) {
+                        _keyDownTime = event.downTime
                         return true
+                    }
+                }
+
+                KeyEvent.ACTION_UP -> {
+                    if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE)
+                        && !event.isCanceled
+                    ) {
+                        if (_keyDownTime == event.downTime) {
+                            _keyDownTime = 0
+                            onBackPressed()
+                            return true
+                        }
                     }
                 }
             }
@@ -720,7 +721,6 @@ open class FDialog : IDialog {
                 Log.i(IDialog::class.java.simpleName, "onAttachedToWindow ${this@FDialog}")
             }
             checkFocus(true)
-            viewTreeObserver.addOnGlobalFocusChangeListener(_onGlobalFocusChangeListener)
         }
 
         override fun onDetachedFromWindow() {
@@ -729,8 +729,6 @@ open class FDialog : IDialog {
                 Log.i(IDialog::class.java.simpleName, "onDetachedFromWindow ${this@FDialog}")
             }
             checkFocus(false)
-            viewTreeObserver.removeOnGlobalFocusChangeListener(_onGlobalFocusChangeListener)
-            _focusViewRef = null
         }
 
         override fun onViewAdded(child: View) {
