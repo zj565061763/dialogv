@@ -630,7 +630,7 @@ open class FDialog : IDialog {
                 if (focusedChild !== containerView && FDialogHolder.getLast(_activity) == this@FDialog) {
                     requestChildFocus(containerView, containerView)
                 }
-                postDelayed(this, 500L)
+                postDelayed(this, 1000L)
             }
         }
 
