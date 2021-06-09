@@ -31,7 +31,12 @@ class PositionDialog : FDialog, View.OnClickListener {
 
     override fun onClick(v: View) {
         dismiss()
-        val popDialog = PopDialog((context as Activity))
+
+        val popDialog = PopDialog((context as Activity)).apply {
+            // 设置平移背景
+            this.target().setTranslateBackground(true)
+        }
+
         when (v) {
             _binding.btnLeftTop -> {
                 popDialog.target().show(_targetView, ITargetDialog.Position.LeftOutsideTop)
