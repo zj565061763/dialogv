@@ -624,8 +624,6 @@ open class FDialog : IDialog {
             removeCallbacks(_checkFocusRunnable)
             if (check) {
                 post(_checkFocusRunnable)
-            } else {
-                clearFocus()
             }
         }
 
@@ -640,30 +638,37 @@ open class FDialog : IDialog {
         }
 
         override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-            val keyCode = event.keyCode
-            when (event.action) {
-                KeyEvent.ACTION_DOWN -> {
-                    if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE)
-                        && !event.isCanceled
-                    ) {
-                        _keyCode = keyCode
-                        _keyDownTime = event.downTime
-                        return true
-                    }
-                }
+            if (super.dispatchKeyEvent(event)) return true
+            return event.dispatch(_keyEventCallback, keyDispatcherState, this)
+        }
 
-                KeyEvent.ACTION_UP -> {
-                    if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE)
-                        && !event.isCanceled
-                    ) {
-                        if (_keyCode == keyCode && _keyDownTime == event.downTime) {
-                            onBackPressed()
-                            return true
-                        }
-                    }
+        private val _keyEventCallback = object : KeyEvent.Callback {
+            override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                    event.startTracking()
+                    return true
                 }
+                return false
             }
-            return super.dispatchKeyEvent(event)
+
+            override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+                if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE)
+                    && !event.isCanceled
+                    && event.isTracking
+                ) {
+                    onBackPressed()
+                    return true
+                }
+                return false
+            }
+
+            override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+                return false
+            }
+
+            override fun onKeyMultiple(keyCode: Int, count: Int, event: KeyEvent?): Boolean {
+                return false
+            }
         }
 
         override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
