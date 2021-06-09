@@ -630,7 +630,7 @@ open class FDialog : IDialog {
         private val _checkFocusRunnable = object : Runnable {
             override fun run() {
                 if (!Utils.isAttached(this@InternalDialogView)) return
-                if (focusedChild !== containerView && FDialogHolder.getLast(_activity) == this@FDialog) {
+                if (!hasFocus() && FDialogHolder.getLast(_activity) == this@FDialog) {
                     requestChildFocus(containerView, containerView)
                 }
                 postDelayed(this, 1000L)
