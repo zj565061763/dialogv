@@ -24,6 +24,8 @@ open class FDialog : IDialog {
 
     private val _dialogView: InternalDialogView
     private var _contentView: View? = null
+    internal val backgroundView: View
+        get() = _dialogView.backgroundView
 
     private var _state = State.Dismissed
     private var _gravity = Gravity.NO_GRAVITY

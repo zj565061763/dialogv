@@ -14,6 +14,11 @@ interface ITargetDialog {
     fun setMarginY(margin: Int): ITargetDialog
 
     /**
+     * 设置是否偏移背景，默认false
+     */
+    fun setTranslateBackground(translate: Boolean): ITargetDialog
+
+    /**
      * 显示在目标view的某个位置
      *
      * @param target   目标view
