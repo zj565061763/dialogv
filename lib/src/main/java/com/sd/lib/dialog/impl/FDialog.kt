@@ -603,9 +603,6 @@ open class FDialog : IDialog {
         val backgroundView: View
         val containerView: LinearLayout
 
-        private var _keyCode = 0
-        private var _keyDownTime = 0L
-
         init {
             backgroundView = InternalBackgroundView(context)
             addView(
