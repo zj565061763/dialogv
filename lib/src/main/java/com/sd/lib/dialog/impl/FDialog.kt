@@ -631,6 +631,9 @@ open class FDialog : IDialog {
             override fun run() {
                 if (!Utils.isAttached(this@InternalDialogView)) return
                 if (!hasFocus() && FDialogHolder.getLast(_activity) == this@FDialog) {
+                    if (isDebug) {
+                        Log.i(IDialog::class.java.simpleName, "requestFocus ${this@FDialog}")
+                    }
                     requestChildFocus(containerView, containerView)
                 }
                 postDelayed(this, 1000L)
