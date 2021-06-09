@@ -74,15 +74,15 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                 override fun onUpdate(x: Int, y: Int, source: View, target: View) {
                     var finalX = x + _marginX
                     var finalY = y + _marginY
-                    // 0-left  1-top  2-right  3-bottom
-                    var backgroundPositionType = 0
+                    var direction: Direction? = null
+
                     when (_position) {
                         ITargetDialog.Position.LeftOutside,
                         ITargetDialog.Position.LeftOutsideTop,
                         ITargetDialog.Position.LeftOutsideCenter,
                         ITargetDialog.Position.LeftOutsideBottom -> {
                             finalX -= source.width
-                            backgroundPositionType = 0
+                            direction = Direction.Left
                         }
 
                         ITargetDialog.Position.RightOutside,
@@ -90,7 +90,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.RightOutsideCenter,
                         ITargetDialog.Position.RightOutsideBottom -> {
                             finalX += source.width
-                            backgroundPositionType = 2
+                            direction = Direction.Right
                         }
 
                         ITargetDialog.Position.TopOutside,
@@ -98,7 +98,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.TopOutsideCenter,
                         ITargetDialog.Position.TopOutsideRight -> {
                             finalY -= source.height
-                            backgroundPositionType = 1
+                            direction = Direction.Top
                         }
 
                         ITargetDialog.Position.BottomOutside,
@@ -106,7 +106,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.BottomOutsideCenter,
                         ITargetDialog.Position.BottomOutsideRight -> {
                             finalY += source.height
-                            backgroundPositionType = 3
+                            direction = Direction.Bottom
                         }
                     }
 
@@ -122,41 +122,38 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                     source.offsetLeftAndRight(finalX - source.left)
                     source.offsetTopAndBottom(finalY - source.top)
 
-                    checkTranslateBackground(backgroundPositionType, source)
+                    checkTranslateBackground(direction, source)
                 }
             })
         }
     }
 
-    private fun checkTranslateBackground(backgroundPositionType: Int, source: View) {
+    private fun checkTranslateBackground(direction: Direction?, source: View) {
+        if (direction == null) return
         if (!_translateBackground) return
         if (_dialog !is FDialog) return
 
         val backgroundView = _dialog.backgroundView
-        when (backgroundPositionType) {
-            0 -> {
-                // left
+        when (direction) {
+            Direction.Left -> {
                 backgroundView.layout(
                     0, 0,
                     source.right, backgroundView.measuredHeight
                 )
             }
-            1 -> {
-                // top
+            Direction.Top -> {
                 backgroundView.layout(
                     0, 0,
                     backgroundView.measuredWidth, source.bottom
                 )
             }
-            2 -> {
-                // right
+            Direction.Right -> {
                 backgroundView.layout(
                     source.left, 0,
                     backgroundView.measuredWidth, backgroundView.measuredHeight
                 )
             }
-            3 -> {
-                // bottom
+            Direction.Bottom -> {
                 backgroundView.layout(
                     0, source.top,
                     backgroundView.measuredWidth, backgroundView.measuredHeight
@@ -286,4 +283,11 @@ private class DialogBackup {
             dialog.gravity = _gravity
         }
     }
+}
+
+private enum class Direction {
+    Left,
+    Top,
+    Right,
+    Bottom
 }
