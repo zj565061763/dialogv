@@ -89,6 +89,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
          * 设置动画时长
          */
         dialog.setAnimatorDuration(1000)
+
         return dialog
     }
 
@@ -99,7 +100,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             _binding.btnSimpleTwo -> {
                 createSimpleDialog().show()
-                createSimpleDialog().show()
+                v.postDelayed({
+                    createSimpleDialog().show()
+                }, 1000)
             }
             _binding.btnTarget -> {
                 PositionDialog(this, v).show()
