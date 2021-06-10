@@ -9,8 +9,8 @@ import com.sd.lib.dialog.animator.PivotPercentCreator
 import com.sd.lib.dialog.animator.ScaleXYCreator
 import com.sd.lib.viewtracker.FViewTracker
 import com.sd.lib.viewtracker.ViewTracker
-import com.sd.lib.viewupdater.ViewUpdater
-import com.sd.lib.viewupdater.impl.OnGlobalLayoutChangeUpdater
+import com.sd.lib.viewtracker.updater.ViewUpdater
+import com.sd.lib.viewtracker.updater.impl.OnGlobalLayoutChangeUpdater
 
 internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog {
     private var _position: ITargetDialog.Position? = null
