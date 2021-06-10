@@ -40,25 +40,16 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         _position = position
 
         val contentView = _dialog.contentView
+        _viewUpdater.view = contentView
         _viewTracker.source = contentView
         _viewTracker.target = target
-        _viewUpdater.view = contentView
 
         _dialog.show()
     }
 
     private val _viewUpdater: ViewUpdater by lazy {
-        object : OnGlobalLayoutChangeUpdater() {
-            override fun onStateChanged(started: Boolean) {
-                super.onStateChanged(started)
-                if (started) {
-                    _dialogBackup.backup(_dialog)
-                } else {
-                    _dialogBackup.restore(_dialog)
-                }
-            }
-        }.also {
-            it.setUpdatable {
+        OnGlobalLayoutChangeUpdater().apply {
+            this.setUpdatable {
                 _viewTracker.update()
             }
         }
@@ -228,15 +219,21 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.0f))
             }
         }
+
+        _dialogBackup.backup(_dialog)
         _viewUpdater.start()
     }
 
     fun onStop() {
         _viewUpdater.stop()
+        _viewUpdater.view = null
+
         _viewTracker.source = null
         _viewTracker.target = null
+
         _position = null
         restoreAnimator()
+        _dialogBackup.restore(_dialog)
     }
 
     private fun setDefaultAnimator(creator: AnimatorCreator) {
