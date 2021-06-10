@@ -150,10 +150,11 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     }
 
     fun onStart() {
-        val isReady = _viewTracker.source != null && _viewTracker.target != null && _position != null
-        if (!isReady) return
+        val position = _position ?: return
+        if (_viewUpdater.view == null) return
+        if (_viewTracker.source == null || _viewTracker.target == null) return
 
-        when (_position) {
+        when (position) {
             ITargetDialog.Position.LeftOutside -> {
                 _viewTracker.setPosition(ViewTracker.Position.Left)
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.5f))
