@@ -6,8 +6,8 @@ plugins {
 
 def libGroupId = "com.sd.lib.android"
 def libArtifactId = "dialogv"
-def libVersionCode = 20210609
-def libVersionName = "1.0.0-alpha05"
+def libVersionCode = 20210610
+def libVersionName = "1.0.0-alpha06"
 
 android {
     compileSdkVersion 30
