@@ -261,20 +261,23 @@ private class DialogBackup {
     private var _hasBackup = false
 
     fun backup(dialog: IDialog) {
-        _paddingLeft = dialog.paddingLeft
-        _paddingTop = dialog.paddingTop
-        _paddingRight = dialog.paddingRight
-        _paddingBottom = dialog.paddingBottom
-        _gravity = dialog.gravity
+        if (!_hasBackup) {
+            _paddingLeft = dialog.paddingLeft
+            _paddingTop = dialog.paddingTop
+            _paddingRight = dialog.paddingRight
+            _paddingBottom = dialog.paddingBottom
+            _gravity = dialog.gravity
 
-        _hasBackup = true
+            _hasBackup = true
+        }
     }
 
     fun restore(dialog: IDialog) {
         if (_hasBackup) {
-            _hasBackup = false
             dialog.setPadding(_paddingLeft, _paddingTop, _paddingRight, _paddingBottom)
             dialog.gravity = _gravity
+
+            _hasBackup = false
         }
     }
 }
