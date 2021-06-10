@@ -48,7 +48,12 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     }
 
     private val _viewUpdater: ViewUpdater by lazy {
-        OnGlobalLayoutChangeUpdater().apply {
+        object : OnGlobalLayoutChangeUpdater() {
+            override fun onStateChanged(started: Boolean) {
+                super.onStateChanged(started)
+                Log.i(SimpleTargetDialog::class.java.simpleName, "ViewUpdater onStateChanged ${started}")
+            }
+        }.apply {
             this.setUpdatable {
                 _viewTracker.update()
             }
