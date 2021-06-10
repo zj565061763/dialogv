@@ -67,10 +67,6 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     private val _viewTracker: ViewTracker by lazy {
         FViewTracker().also {
             it.setCallback(object : ViewTracker.Callback() {
-                override fun canUpdate(source: View?, target: View?): Boolean {
-                    return target != null && source != null && source.width > 0 && source.height > 0
-                }
-
                 override fun onUpdate(x: Int, y: Int, source: View, target: View) {
                     var finalX = x + _marginX
                     var finalY = y + _marginY
