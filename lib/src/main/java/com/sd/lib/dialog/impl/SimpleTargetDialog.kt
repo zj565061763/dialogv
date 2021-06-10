@@ -269,6 +269,7 @@ private class DialogBackup {
             _gravity = dialog.gravity
 
             _hasBackup = true
+            Log.i(SimpleTargetDialog::class.java.simpleName, "DialogBackup backup ${_paddingLeft},${_paddingTop},${_paddingRight},${_paddingBottom}")
         }
     }
 
@@ -278,6 +279,7 @@ private class DialogBackup {
             dialog.gravity = _gravity
 
             _hasBackup = false
+            Log.i(SimpleTargetDialog::class.java.simpleName, "DialogBackup restore")
         }
     }
 }
