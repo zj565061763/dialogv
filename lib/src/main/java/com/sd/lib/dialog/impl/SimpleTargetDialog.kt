@@ -16,7 +16,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     private var _position: ITargetDialog.Position? = null
     private var _marginX = 0
     private var _marginY = 0
-    private var _translateBackground = false
+    private var _translateBackground = true
 
     private val _dialogBackup by lazy { DialogBackup() }
     private var _modifyAnimatorCreator: AnimatorCreator? = null
@@ -145,6 +145,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         if (direction == null) return
         if (!_translateBackground) return
         if (_dialog !is FDialog) return
+        if (!_dialog.isBackgroundDim) return
 
         val backgroundView = _dialog.backgroundView
         when (direction) {
