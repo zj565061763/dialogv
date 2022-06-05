@@ -9,7 +9,7 @@ class PopDialog(activity: Activity) : FDialog(activity) {
     init {
         setPadding(0, 0, 0, 0)
         setContentView(R.layout.dialog_pop)
-        setBackgroundDim(false)
+        isBackgroundDim = false
 
         findViewById<View>(R.id.btn)!!.setOnClickListener {
             Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show()
