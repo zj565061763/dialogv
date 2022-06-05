@@ -27,7 +27,7 @@ interface ITargetDialog {
     /**
      * 设置目标位置信息
      */
-    fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?)
+    fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?): ITargetDialog
 
     /**
      * 让窗口显示在目标的某个位置[Position]

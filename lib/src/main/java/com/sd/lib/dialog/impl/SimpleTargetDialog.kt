@@ -48,13 +48,14 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         return this
     }
 
-    override fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?) {
+    override fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?): ITargetDialog {
         if (locationInfo == null) {
             if (_targetLocationInfo != null) {
                 _dialog.dismiss()
             }
         }
         _viewTracker.setTargetLocationInfo(locationInfo)
+        return this
     }
 
     override fun show(position: ITargetDialog.Position) {
