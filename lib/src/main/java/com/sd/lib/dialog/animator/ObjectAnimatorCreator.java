@@ -4,11 +4,9 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.view.View;
 
-public abstract class ObjectAnimatorCreator extends BaseAnimatorCreator
-{
+public abstract class ObjectAnimatorCreator extends BaseAnimatorCreator {
     @Override
-    protected final Animator onCreateAnimator(boolean show, View view)
-    {
+    protected final Animator onCreateAnimator(boolean show, View view) {
         final ObjectAnimator animator = new ObjectAnimator();
         animator.setPropertyName(getPropertyName());
 
@@ -55,8 +53,7 @@ public abstract class ObjectAnimatorCreator extends BaseAnimatorCreator
      *
      * @return
      */
-    protected long getDuration()
-    {
+    protected long getDuration() {
         return 200;
     }
 }

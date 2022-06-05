@@ -6,14 +6,11 @@ import android.view.ViewParent;
 /**
  * 向左滑入，向右滑出（相对于内容View父容器）
  */
-public class SlideLeftRightParentCreator extends SlideHorizontalCreator
-{
+public class SlideLeftRightParentCreator extends SlideHorizontalCreator {
     @Override
-    protected float getValueHidden(View view)
-    {
+    protected float getValueHidden(View view) {
         final ViewParent parent = view.getParent();
-        if (parent instanceof View)
-        {
+        if (parent instanceof View) {
             final View parentView = (View) parent;
             final int distance = parentView.getWidth() - view.getLeft();
             if (distance > 0)
@@ -23,8 +20,7 @@ public class SlideLeftRightParentCreator extends SlideHorizontalCreator
     }
 
     @Override
-    protected float getValueShown(View view)
-    {
+    protected float getValueShown(View view) {
         return 0;
     }
 }

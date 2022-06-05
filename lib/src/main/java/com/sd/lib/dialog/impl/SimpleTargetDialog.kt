@@ -72,7 +72,8 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.LeftOutside,
                         ITargetDialog.Position.LeftOutsideTop,
                         ITargetDialog.Position.LeftOutsideCenter,
-                        ITargetDialog.Position.LeftOutsideBottom -> {
+                        ITargetDialog.Position.LeftOutsideBottom,
+                        -> {
                             finalX -= source.width
                             direction = Direction.Left
                         }
@@ -80,7 +81,8 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.RightOutside,
                         ITargetDialog.Position.RightOutsideTop,
                         ITargetDialog.Position.RightOutsideCenter,
-                        ITargetDialog.Position.RightOutsideBottom -> {
+                        ITargetDialog.Position.RightOutsideBottom,
+                        -> {
                             finalX += source.width
                             direction = Direction.Right
                         }
@@ -88,7 +90,8 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.TopOutside,
                         ITargetDialog.Position.TopOutsideLeft,
                         ITargetDialog.Position.TopOutsideCenter,
-                        ITargetDialog.Position.TopOutsideRight -> {
+                        ITargetDialog.Position.TopOutsideRight,
+                        -> {
                             finalY -= source.height
                             direction = Direction.Top
                         }
@@ -96,7 +99,8 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.BottomOutside,
                         ITargetDialog.Position.BottomOutsideLeft,
                         ITargetDialog.Position.BottomOutsideCenter,
-                        ITargetDialog.Position.BottomOutsideRight -> {
+                        ITargetDialog.Position.BottomOutsideRight,
+                        -> {
                             finalY += source.height
                             direction = Direction.Bottom
                         }

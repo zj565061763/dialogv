@@ -8,7 +8,9 @@ import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.graphics.Color
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
@@ -325,22 +327,26 @@ open class FDialog : IDialog {
                     _isAnimatorCreatorModifiedInternal = true
                 }
                 Gravity.LEFT,
-                Gravity.LEFT or Gravity.CENTER -> {
+                Gravity.LEFT or Gravity.CENTER,
+                -> {
                     animatorCreator = SlideRightLeftParentCreator()
                     _isAnimatorCreatorModifiedInternal = true
                 }
                 Gravity.TOP,
-                Gravity.TOP or Gravity.CENTER -> {
+                Gravity.TOP or Gravity.CENTER,
+                -> {
                     animatorCreator = SlideBottomTopParentCreator()
                     _isAnimatorCreatorModifiedInternal = true
                 }
                 Gravity.RIGHT,
-                Gravity.RIGHT or Gravity.CENTER -> {
+                Gravity.RIGHT or Gravity.CENTER,
+                -> {
                     animatorCreator = SlideLeftRightParentCreator()
                     _isAnimatorCreatorModifiedInternal = true
                 }
                 Gravity.BOTTOM,
-                Gravity.BOTTOM or Gravity.CENTER -> {
+                Gravity.BOTTOM or Gravity.CENTER,
+                -> {
                     animatorCreator = SlideTopBottomParentCreator()
                     _isAnimatorCreatorModifiedInternal = true
                 }

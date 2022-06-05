@@ -1,7 +1,6 @@
 package com.sd.lib.dialog.impl
 
 import android.app.Activity
-import java.util.*
 
 internal object FDialogHolder {
     private val mapActivityDialog: MutableMap<Activity, MutableCollection<FDialog>> = HashMap()
