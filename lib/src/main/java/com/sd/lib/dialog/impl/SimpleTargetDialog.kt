@@ -36,14 +36,20 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         return this
     }
 
-    override fun show(target: View?, position: ITargetDialog.Position) {
-        _position = position
-
-        val contentView = _dialog.contentView
-        _viewUpdater.view = contentView
-        _viewTracker.source = contentView
+    override fun setTarget(target: View?): ITargetDialog {
+        if (target == null) {
+            _dialog.dismiss()
+        }
         _viewTracker.target = target
+        return this
+    }
 
+    override fun show(position: ITargetDialog.Position) {
+        _position = position
+        _dialog.contentView.let {
+            _viewUpdater.view = it
+            _viewTracker.source = it
+        }
         _dialog.show()
     }
 

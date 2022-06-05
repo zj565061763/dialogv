@@ -19,12 +19,14 @@ interface ITargetDialog {
     fun setTranslateBackground(translate: Boolean): ITargetDialog
 
     /**
-     * 显示在目标view的某个位置
-     *
-     * @param target   目标view
-     * @param position 显示的位置[Position]
+     * 设置目标View
      */
-    fun show(target: View?, position: Position)
+    fun setTarget(target: View?): ITargetDialog
+
+    /**
+     * 让窗口显示在目标的某个位置[Position]
+     */
+    fun show(position: Position)
 
     enum class Position {
         /** 在target左边外侧 */

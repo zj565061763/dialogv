@@ -35,44 +35,45 @@ class PositionDialog : FDialog, View.OnClickListener {
         val popDialog = PopDialog((context as Activity)).apply {
             // 设置平移背景
             this.target().setTranslateBackground(true)
+            this.target().setTarget(_targetView)
         }
 
         when (v) {
             _binding.btnLeftTop -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.LeftOutsideTop)
+                popDialog.target().show(ITargetDialog.Position.LeftOutsideTop)
             }
             _binding.btnLeftCenter -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.LeftOutsideCenter)
+                popDialog.target().show(ITargetDialog.Position.LeftOutsideCenter)
             }
             _binding.btnLeftBottom -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.LeftOutsideBottom)
+                popDialog.target().show(ITargetDialog.Position.LeftOutsideBottom)
             }
             _binding.btnRightTop -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.RightOutsideTop)
+                popDialog.target().show(ITargetDialog.Position.RightOutsideTop)
             }
             _binding.btnRightCenter -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.RightOutsideCenter)
+                popDialog.target().show(ITargetDialog.Position.RightOutsideCenter)
             }
             _binding.btnRightBottom -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.RightOutsideBottom)
+                popDialog.target().show(ITargetDialog.Position.RightOutsideBottom)
             }
             _binding.btnTopLeft -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.TopOutsideLeft)
+                popDialog.target().show(ITargetDialog.Position.TopOutsideLeft)
             }
             _binding.btnTopCenter -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.TopOutsideCenter)
+                popDialog.target().show(ITargetDialog.Position.TopOutsideCenter)
             }
             _binding.btnTopRight -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.TopOutsideRight)
+                popDialog.target().show(ITargetDialog.Position.TopOutsideRight)
             }
             _binding.btnBottomLeft -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.BottomOutsideLeft)
+                popDialog.target().show(ITargetDialog.Position.BottomOutsideLeft)
             }
             _binding.btnBottomCenter -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.BottomOutsideCenter)
+                popDialog.target().show(ITargetDialog.Position.BottomOutsideCenter)
             }
             _binding.btnBottomRight -> {
-                popDialog.target().show(_targetView, ITargetDialog.Position.BottomOutsideRight)
+                popDialog.target().show(ITargetDialog.Position.BottomOutsideRight)
             }
         }
     }
