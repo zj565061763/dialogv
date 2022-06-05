@@ -33,8 +33,10 @@ class PositionDialog : FDialog, View.OnClickListener {
         dismiss()
 
         val popDialog = PopDialog((context as Activity)).apply {
+            // 半透明背景
+            isBackgroundDim = false
+
             // 设置平移背景
-            this.target().setTranslateBackground(true)
             this.target().setTarget(_targetView)
         }
 
