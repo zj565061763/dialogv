@@ -36,7 +36,7 @@ internal object FDialogHolder {
     @JvmStatic
     fun get(activity: Activity): List<FDialog>? {
         val holder = mapActivityDialog[activity] ?: return null
-        return ArrayList(holder)
+        return holder.toMutableList()
     }
 
     @JvmStatic
