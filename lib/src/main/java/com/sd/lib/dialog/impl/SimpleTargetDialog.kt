@@ -83,9 +83,14 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     private val _viewTracker: ViewTracker by lazy {
         FViewTracker().apply {
             this.setCallback(object : ViewTracker.Callback() {
-                override fun onUpdate(x: Int, y: Int, source: View, target: View) {
-                    var finalX = x + _marginX
-                    var finalY = y + _marginY
+                override fun onUpdate(x: Int?, y: Int?, source: ViewTracker.SourceLocationInfo, target: ViewTracker.LocationInfo) {
+                    require(source is ViewTracker.ViewLocationInfo)
+                    val sourceView = source.view!!
+                    val xInt = x ?: sourceView.left
+                    val yInt = y ?: sourceView.top
+
+                    var finalX = xInt + _marginX
+                    var finalY = yInt + _marginY
                     var direction: Direction? = null
 
                     when (_position) {
@@ -94,7 +99,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.LeftOutsideCenter,
                         ITargetDialog.Position.LeftOutsideBottom,
                         -> {
-                            finalX -= source.width
+                            finalX -= sourceView.width
                             direction = Direction.Left
                         }
 
@@ -103,7 +108,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.RightOutsideCenter,
                         ITargetDialog.Position.RightOutsideBottom,
                         -> {
-                            finalX += source.width
+                            finalX += sourceView.width
                             direction = Direction.Right
                         }
 
@@ -112,7 +117,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.TopOutsideCenter,
                         ITargetDialog.Position.TopOutsideRight,
                         -> {
-                            finalY -= source.height
+                            finalY -= sourceView.height
                             direction = Direction.Top
                         }
 
@@ -121,25 +126,25 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                         ITargetDialog.Position.BottomOutsideCenter,
                         ITargetDialog.Position.BottomOutsideRight,
                         -> {
-                            finalY += source.height
+                            finalY += sourceView.height
                             direction = Direction.Bottom
                         }
                         else -> {}
                     }
 
-                    val sourceParent = source.parent as View
+                    val sourceParent = sourceView.parent as View
                     val left = finalX
                     val top = finalY
-                    val right = sourceParent.width - finalX - source.width
-                    val bottom = sourceParent.height - finalY - source.height
+                    val right = sourceParent.width - finalX - sourceView.width
+                    val bottom = sourceParent.height - finalY - sourceView.height
 
                     Log.i(SimpleTargetDialog::class.java.simpleName, "${left},${top},${right},${bottom}")
 
                     _dialog.setPadding(left, top, right, bottom)
-                    source.offsetLeftAndRight(finalX - source.left)
-                    source.offsetTopAndBottom(finalY - source.top)
+                    sourceView.offsetLeftAndRight(finalX - sourceView.left)
+                    sourceView.offsetTopAndBottom(finalY - sourceView.top)
 
-                    checkTranslateBackground(direction, source)
+                    checkTranslateBackground(direction, sourceView)
                 }
             })
         }
@@ -262,6 +267,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         _viewTracker.source = null
         _viewTracker.target = null
 
+        _targetLocationInfo = null
         _position = null
         restoreAnimator()
         _dialogBackup.restore(_dialog)
