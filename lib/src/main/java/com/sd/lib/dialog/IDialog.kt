@@ -32,6 +32,11 @@ interface IDialog {
     var gravity: Int
 
     /**
+     * 背景模糊
+     */
+    var isBackgroundDim: Boolean
+
+    /**
      * 窗口显示对象
      */
     var display: Display
@@ -55,11 +60,6 @@ interface IDialog {
      * 根据id查找view
      */
     fun <T : View> findViewById(id: Int): T?
-
-    /**
-     * 设置背景模糊
-     */
-    fun setBackgroundDim(dim: Boolean)
 
     /**
      * 设置窗口是否可以取消，默认true

@@ -57,7 +57,7 @@ open class FDialog : IDialog {
         val defaultPadding = (activity.resources.displayMetrics.widthPixels * 0.1f).toInt()
         setPadding(defaultPadding, 0, defaultPadding, 0)
 
-        setBackgroundDim(true)
+        isBackgroundDim = true
         gravity = Gravity.CENTER
     }
 
@@ -107,16 +107,6 @@ open class FDialog : IDialog {
         return _contentView?.findViewById(id)
     }
 
-    override fun setBackgroundDim(dim: Boolean) {
-        _isBackgroundDim = dim
-        if (dim) {
-            val color = context.resources.getColor(R.color.lib_dialogv_background_dim)
-            _dialogView.backgroundView.setBackgroundColor(color)
-        } else {
-            _dialogView.backgroundView.setBackgroundColor(0)
-        }
-    }
-
     override fun setCancelable(cancel: Boolean) {
         _cancelable = cancel
     }
@@ -147,6 +137,18 @@ open class FDialog : IDialog {
         get() = _gravity
         set(value) {
             _dialogView.containerView.gravity = value
+        }
+
+    override var isBackgroundDim: Boolean
+        get() = _isBackgroundDim
+        set(value) {
+            _isBackgroundDim = value
+            if (value) {
+                val color = context.resources.getColor(R.color.lib_dialogv_background_dim)
+                _dialogView.backgroundView.setBackgroundColor(color)
+            } else {
+                _dialogView.backgroundView.setBackgroundColor(0)
+            }
         }
 
     override var display: IDialog.Display = ActivityDisplay()
