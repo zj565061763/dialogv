@@ -33,10 +33,10 @@ class PositionDialog : FDialog, View.OnClickListener {
         dismiss()
 
         val popDialog = PopDialog((context as Activity)).apply {
-            // 半透明背景
+            // 半透明背景（默认true）
             isBackgroundDim = true
 
-            // 偏移半透明背景
+            // 偏移半透明背景，仅当半透明开启之后才有效（默认true）
             target().setTranslateBackground(true)
 
             // 设置目标
