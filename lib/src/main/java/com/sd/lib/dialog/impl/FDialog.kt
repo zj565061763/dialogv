@@ -32,7 +32,7 @@ open class FDialog : IDialog {
     private var _state = State.Dismissed
     private var _gravity = Gravity.NO_GRAVITY
     private var _cancelable = true
-    private var _canceledOnTouchOutside = true
+    private var _canceledOnTouchOutside = false
     private var _isBackgroundDim = false
 
     private var _animatorCreator: AnimatorCreator? = null
