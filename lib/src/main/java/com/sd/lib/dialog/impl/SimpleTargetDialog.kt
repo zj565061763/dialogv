@@ -21,8 +21,6 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     private val _dialogBackup by lazy { DialogBackup() }
     private var _modifyAnimatorCreator: AnimatorCreator? = null
 
-    private var _targetLocationInfo: ViewTracker.LocationInfo? = null
-
     override fun setMarginX(margin: Int): ITargetDialog {
         _marginX = margin
         return this
@@ -39,22 +37,14 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     }
 
     override fun setTarget(target: View?): ITargetDialog {
-        if (target == null) {
-            if (_viewTracker.target != null) {
-                _dialog.dismiss()
-            }
-        }
         _viewTracker.target = target
+        _viewTracker.update()
         return this
     }
 
     override fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?): ITargetDialog {
-        if (locationInfo == null) {
-            if (_targetLocationInfo != null) {
-                _dialog.dismiss()
-            }
-        }
-        _viewTracker.setTargetLocationInfo(locationInfo)
+        _viewTracker.targetLocationInfo = locationInfo
+        _viewTracker.update()
         return this
     }
 
@@ -71,7 +61,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         object : OnGlobalLayoutChangeUpdater() {
             override fun onStateChanged(started: Boolean) {
                 super.onStateChanged(started)
-                Log.i(SimpleTargetDialog::class.java.simpleName, "ViewUpdater onStateChanged ${started}")
+                Log.i(SimpleTargetDialog::class.java.simpleName, "ViewUpdater onStateChanged $started")
             }
         }.apply {
             this.setUpdatable {
@@ -84,6 +74,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         FViewTracker().apply {
             this.setCallback(object : ViewTracker.Callback() {
                 override fun onUpdate(x: Int?, y: Int?, source: ViewTracker.SourceLocationInfo, target: ViewTracker.LocationInfo) {
+                    if (_position == null) return
                     require(source is ViewTracker.ViewLocationInfo)
                     val sourceView = source.view!!
                     val xInt = x ?: sourceView.left
@@ -187,7 +178,8 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     fun onStart() {
         val position = _position ?: return
         if (_viewUpdater.view == null) return
-        if (_viewTracker.source == null || _viewTracker.target == null) return
+        if (_viewTracker.sourceLocationInfo == null) return
+        if (_viewTracker.targetLocationInfo == null) return
 
         when (position) {
             ITargetDialog.Position.LeftOutside -> {
@@ -264,10 +256,9 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         _viewUpdater.stop()
         _viewUpdater.view = null
 
-        _viewTracker.source = null
-        _viewTracker.target = null
+        _viewTracker.sourceLocationInfo = null
+        _viewTracker.targetLocationInfo = null
 
-        _targetLocationInfo = null
         _position = null
         restoreAnimator()
         _dialogBackup.restore(_dialog)
