@@ -16,7 +16,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     private var _position: ITargetDialog.Position? = null
     private var _marginX = 0
     private var _marginY = 0
-    private var _translateBackground = true
+    private var _translateBackground = false
 
     private val _dialogBackup by lazy { DialogBackup() }
     private var _modifyAnimatorCreator: AnimatorCreator? = null

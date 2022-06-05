@@ -15,7 +15,7 @@ interface ITargetDialog {
     fun setMarginY(margin: Int): ITargetDialog
 
     /**
-     * 设置是否偏移背景，默认true
+     * 设置是否偏移背景，默认false
      */
     fun setTranslateBackground(translate: Boolean): ITargetDialog
 
