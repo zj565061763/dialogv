@@ -104,6 +104,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                             finalY += source.height
                             direction = Direction.Bottom
                         }
+                        else -> {}
                     }
 
                     val sourceParent = source.parent as View
