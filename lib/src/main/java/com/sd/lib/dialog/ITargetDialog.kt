@@ -30,6 +30,11 @@ interface ITargetDialog {
     fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?): ITargetDialog
 
     /**
+     * 刷新位置
+     */
+    fun update()
+
+    /**
      * 让窗口显示在目标的某个位置[Position]
      */
     fun show(position: Position)

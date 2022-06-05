@@ -38,14 +38,18 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
 
     override fun setTarget(target: View?): ITargetDialog {
         _viewTracker.target = target
-        _viewTracker.update()
+        update()
         return this
     }
 
     override fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?): ITargetDialog {
         _viewTracker.targetLocationInfo = locationInfo
-        _viewTracker.update()
+        update()
         return this
+    }
+
+    override fun update() {
+        _viewTracker.update()
     }
 
     override fun show(position: ITargetDialog.Position) {
@@ -65,7 +69,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
             }
         }.apply {
             this.setUpdatable {
-                _viewTracker.update()
+                update()
             }
         }
     }
