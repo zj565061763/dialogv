@@ -640,7 +640,7 @@ open class FDialog : IDialog {
                     Log.i(IDialog::class.java.simpleName, "checkFocusRunnable ${this@FDialog}")
                 }
 
-                if (!Utils.isAttached(this@InternalDialogView)) return
+                if (!this@InternalDialogView.isAttachedToWindow) return
                 if (!hasFocus() && FDialogHolder.getLast(_activity) == this@FDialog) {
                     if (isDebug) {
                         Log.i(IDialog::class.java.simpleName, "requestFocus ${this@FDialog}")

@@ -2,7 +2,6 @@ package com.sd.lib.dialog.impl
 
 import android.animation.Animator
 import android.animation.AnimatorSet
-import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -49,15 +48,6 @@ internal object Utils {
             params.bottomMargin != 0
         ) {
             throw RuntimeException("can not set margin to view")
-        }
-    }
-
-    @JvmStatic
-    fun isAttached(view: View): Boolean {
-        return if (Build.VERSION.SDK_INT >= 19) {
-            view.isAttachedToWindow
-        } else {
-            view.windowToken != null
         }
     }
 }
