@@ -1,6 +1,7 @@
 package com.sd.lib.dialog
 
 import android.view.View
+import com.sd.lib.vtrack.tracker.ViewTracker
 
 interface ITargetDialog {
     /**
@@ -22,6 +23,11 @@ interface ITargetDialog {
      * 设置目标View
      */
     fun setTarget(target: View?): ITargetDialog
+
+    /**
+     * 设置目标位置信息
+     */
+    fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?)
 
     /**
      * 让窗口显示在目标的某个位置[Position]

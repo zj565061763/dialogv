@@ -21,6 +21,8 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
     private val _dialogBackup by lazy { DialogBackup() }
     private var _modifyAnimatorCreator: AnimatorCreator? = null
 
+    private var _targetLocationInfo: ViewTracker.LocationInfo? = null
+
     override fun setMarginX(margin: Int): ITargetDialog {
         _marginX = margin
         return this
@@ -38,10 +40,21 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
 
     override fun setTarget(target: View?): ITargetDialog {
         if (target == null) {
-            _dialog.dismiss()
+            if (_viewTracker.target != null) {
+                _dialog.dismiss()
+            }
         }
         _viewTracker.target = target
         return this
+    }
+
+    override fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?) {
+        if (locationInfo == null) {
+            if (_targetLocationInfo != null) {
+                _dialog.dismiss()
+            }
+        }
+        _viewTracker.setTargetLocationInfo(locationInfo)
     }
 
     override fun show(position: ITargetDialog.Position) {
