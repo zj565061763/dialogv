@@ -32,7 +32,6 @@ android {
 }
 
 dependencies {
-//    implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'com.github.zj565061763:view-track:1.0.0'
 }
 
