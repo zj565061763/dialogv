@@ -188,67 +188,67 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
 
         when (position) {
             ITargetDialog.Position.LeftOutside -> {
-                _viewTracker.setPosition(ViewTracker.Position.Left)
+                _viewTracker.position = ViewTracker.Position.Left
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.5f))
             }
             ITargetDialog.Position.LeftOutsideTop -> {
-                _viewTracker.setPosition(ViewTracker.Position.TopLeft)
+                _viewTracker.position = ViewTracker.Position.TopLeft
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.0f))
             }
             ITargetDialog.Position.LeftOutsideCenter -> {
-                _viewTracker.setPosition(ViewTracker.Position.LeftCenter)
+                _viewTracker.position = ViewTracker.Position.LeftCenter
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.5f))
             }
             ITargetDialog.Position.LeftOutsideBottom -> {
-                _viewTracker.setPosition(ViewTracker.Position.BottomLeft)
+                _viewTracker.position = ViewTracker.Position.BottomLeft
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 1.0f))
             }
             ITargetDialog.Position.TopOutside -> {
-                _viewTracker.setPosition(ViewTracker.Position.Top)
+                _viewTracker.position = ViewTracker.Position.Top
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.5f, 1.0f))
             }
             ITargetDialog.Position.TopOutsideLeft -> {
-                _viewTracker.setPosition(ViewTracker.Position.TopLeft)
+                _viewTracker.position = ViewTracker.Position.TopLeft
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 1.0f))
             }
             ITargetDialog.Position.TopOutsideCenter -> {
-                _viewTracker.setPosition(ViewTracker.Position.TopCenter)
+                _viewTracker.position = ViewTracker.Position.TopCenter
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.5f, 1.0f))
             }
             ITargetDialog.Position.TopOutsideRight -> {
-                _viewTracker.setPosition(ViewTracker.Position.TopRight)
+                _viewTracker.position = ViewTracker.Position.TopRight
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 1.0f))
             }
             ITargetDialog.Position.RightOutside -> {
-                _viewTracker.setPosition(ViewTracker.Position.Right)
+                _viewTracker.position = ViewTracker.Position.Right
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 0.5f))
             }
             ITargetDialog.Position.RightOutsideTop -> {
-                _viewTracker.setPosition(ViewTracker.Position.TopRight)
+                _viewTracker.position = ViewTracker.Position.TopRight
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 0.0f))
             }
             ITargetDialog.Position.RightOutsideCenter -> {
-                _viewTracker.setPosition(ViewTracker.Position.RightCenter)
+                _viewTracker.position = ViewTracker.Position.RightCenter
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 0.5f))
             }
             ITargetDialog.Position.RightOutsideBottom -> {
-                _viewTracker.setPosition(ViewTracker.Position.BottomRight)
+                _viewTracker.position = ViewTracker.Position.BottomRight
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 1.0f))
             }
             ITargetDialog.Position.BottomOutside -> {
-                _viewTracker.setPosition(ViewTracker.Position.Bottom)
+                _viewTracker.position = ViewTracker.Position.Bottom
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.5f, 0.0f))
             }
             ITargetDialog.Position.BottomOutsideLeft -> {
-                _viewTracker.setPosition(ViewTracker.Position.BottomLeft)
+                _viewTracker.position = ViewTracker.Position.BottomLeft
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.0f, 0.0f))
             }
             ITargetDialog.Position.BottomOutsideCenter -> {
-                _viewTracker.setPosition(ViewTracker.Position.BottomCenter)
+                _viewTracker.position = ViewTracker.Position.BottomCenter
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 0.5f, 0.0f))
             }
             ITargetDialog.Position.BottomOutsideRight -> {
-                _viewTracker.setPosition(ViewTracker.Position.BottomRight)
+                _viewTracker.position = ViewTracker.Position.BottomRight
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.0f))
             }
         }
