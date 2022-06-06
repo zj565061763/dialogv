@@ -30,14 +30,19 @@ interface ITargetDialog {
     fun setTargetLocationInfo(locationInfo: ViewTracker.LocationInfo?): ITargetDialog
 
     /**
+     * 设置窗口显示在目标的[position]位置，默认[Position.BottomOutside]
+     */
+    fun setPosition(position: Position): ITargetDialog
+
+    /**
      * 刷新位置
      */
     fun update()
 
     /**
-     * 让窗口显示在目标的某个位置[Position]
+     * 显示窗口显
      */
-    fun show(position: Position)
+    fun show()
 
     enum class Position {
         /** 在target左边外侧 */

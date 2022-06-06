@@ -13,7 +13,7 @@ import com.sd.lib.vtrack.updater.ViewUpdater
 import com.sd.lib.vtrack.updater.impl.OnGlobalLayoutChangeUpdater
 
 internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog {
-    private var _position: ITargetDialog.Position? = null
+    private var _position: ITargetDialog.Position = ITargetDialog.Position.BottomOutside
     private var _marginX = 0
     private var _marginY = 0
     private var _translateBackground = true
@@ -48,12 +48,16 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         return this
     }
 
+    override fun setPosition(position: ITargetDialog.Position): ITargetDialog {
+        _position = position
+        return this
+    }
+
     override fun update() {
         _viewTracker.update()
     }
 
-    override fun show(position: ITargetDialog.Position) {
-        _position = position
+    override fun show() {
         _dialog.contentView.let {
             _viewUpdater.view = it
             _viewTracker.source = it
@@ -78,8 +82,8 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         FViewTracker().apply {
             this.setCallback(object : ViewTracker.Callback() {
                 override fun onUpdate(x: Int?, y: Int?, source: ViewTracker.SourceLocationInfo, target: ViewTracker.LocationInfo) {
-                    if (_position == null) return
-                    require(source is ViewTracker.ViewLocationInfo)
+                    if (source !is ViewTracker.ViewLocationInfo) return
+
                     val sourceView = source.view!!
                     val xInt = x ?: sourceView.left
                     val yInt = y ?: sourceView.top
@@ -264,7 +268,6 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
         _viewTracker.sourceLocationInfo = null
         _viewTracker.targetLocationInfo = null
 
-        _position = null
         restoreAnimator()
         _dialogBackup.restore(_dialog)
     }
