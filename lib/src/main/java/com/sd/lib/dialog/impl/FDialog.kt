@@ -53,9 +53,7 @@ open class FDialog : IDialog {
     constructor(activity: Activity) {
         _activity = activity
         _dialogView = InternalDialogView(activity)
-
         isBackgroundDim = true
-        gravity = Gravity.CENTER
     }
 
     override var isDebug: Boolean = false
@@ -623,9 +621,10 @@ open class FDialog : IDialog {
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
 
-            // 设置容器默认间距
+            // 设置默认参数
             val defaultPadding = (resources.displayMetrics.widthPixels * 0.1f).toInt()
             containerView.setPadding(defaultPadding, 0, defaultPadding, 0)
+            containerView.gravity = _gravity
         }
 
         fun checkFocus(check: Boolean) {
