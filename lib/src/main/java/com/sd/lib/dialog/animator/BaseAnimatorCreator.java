@@ -32,47 +32,30 @@ public abstract class BaseAnimatorCreator implements AnimatorCreator {
 
     /**
      * 在动画要创建之前回调
-     *
-     * @param show
-     * @param view
      */
     protected void beforeCreateAnimator(boolean show, View view) {
     }
 
     /**
      * 创建动画
-     *
-     * @param show
-     * @param view
-     * @return
      */
     protected abstract Animator onCreateAnimator(boolean show, View view);
 
 
     /**
      * 动画被创建后回调
-     *
-     * @param show
-     * @param view
-     * @param animator
      */
     protected void onAnimatorCreated(boolean show, View view, Animator animator) {
     }
 
     /**
      * 动画开始回调
-     *
-     * @param show
-     * @param view
      */
     protected void onAnimationStart(boolean show, View view) {
     }
 
     /**
      * 动画结束回调
-     *
-     * @param show
-     * @param view
      */
     protected void onAnimationEnd(boolean show, View view) {
     }
