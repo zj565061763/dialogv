@@ -33,7 +33,6 @@ open class FDialog : IDialog {
     private var _cancelable = true
     private var _canceledOnTouchOutside = true
 
-    private var _animatorCreator: AnimatorCreator? = null
     private var _animatorDuration: Long = 0
 
     private var _lockDialog = false
@@ -121,10 +120,9 @@ open class FDialog : IDialog {
         _onShowListener = listener
     }
 
-    override var animatorCreator: AnimatorCreator?
-        get() = _animatorCreator
+    override var animatorCreator: AnimatorCreator? = null
         set(value) {
-            _animatorCreator = value
+            field = value
             _isAnimatorCreatorModifiedInternal = false
         }
 
@@ -324,7 +322,7 @@ open class FDialog : IDialog {
     private val _delayedDismissRunnable = Runnable { dismiss() }
 
     private fun setDefaultConfigBeforeShow() {
-        if (_animatorCreator == null) {
+        if (animatorCreator == null) {
             when (gravity) {
                 Gravity.CENTER -> {
                     animatorCreator = AlphaCreator()
@@ -418,7 +416,7 @@ open class FDialog : IDialog {
         }
 
         // 内容View动画
-        val creator = _animatorCreator
+        val creator = animatorCreator
         val view = _contentView
         val animatorContent = if (creator == null || view == null) {
             null
