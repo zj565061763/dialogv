@@ -22,36 +22,28 @@ public abstract class ObjectAnimatorCreator extends BaseAnimatorCreator {
         return animator;
     }
 
+    /**
+     * 动画属性名
+     */
     protected abstract String getPropertyName();
 
     /**
      * 返回动画执行到于隐藏状态的值
-     *
-     * @param view
-     * @return
      */
     protected abstract float getValueHidden(View view);
 
     /**
      * 返回动画执行到于显示状态的值
-     *
-     * @param view
-     * @return
      */
     protected abstract float getValueShown(View view);
 
     /**
      * 返回当前的值
-     *
-     * @param view
-     * @return
      */
     protected abstract float getValueCurrent(View view);
 
     /**
      * 返回动画时长，默认200毫秒
-     *
-     * @return
      */
     protected long getDuration() {
         return 200;
