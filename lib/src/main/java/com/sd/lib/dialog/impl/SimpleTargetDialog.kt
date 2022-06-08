@@ -13,7 +13,11 @@ import com.sd.lib.vtrack.tracker.ViewTracker
 import com.sd.lib.vtrack.updater.ViewUpdater
 import com.sd.lib.vtrack.updater.impl.OnGlobalLayoutChangeUpdater
 
-internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog {
+internal class SimpleTargetDialog(
+    dialog: IDialog,
+) : ITargetDialog {
+
+    private val _dialog = dialog
     private var _position: Position = Position.BottomOutside
     private var _marginX = 0
     private var _marginY = 0
