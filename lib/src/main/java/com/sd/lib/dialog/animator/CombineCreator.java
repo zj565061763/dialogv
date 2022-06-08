@@ -8,14 +8,14 @@ public class CombineCreator extends BaseAnimatorCreator {
     private final AnimatorCreator[] mCreators;
 
     public CombineCreator(AnimatorCreator... creators) {
-        if (creators == null || creators.length <= 0)
+        if (creators == null || creators.length <= 0) {
             throw new IllegalArgumentException("creators is null or empty");
-
-        for (AnimatorCreator item : creators) {
-            if (item == null)
-                throw new NullPointerException("creators array contains null item");
         }
-
+        for (AnimatorCreator item : creators) {
+            if (item == null) {
+                throw new NullPointerException("creators array contains null item");
+            }
+        }
         mCreators = creators;
     }
 
@@ -27,23 +27,22 @@ public class CombineCreator extends BaseAnimatorCreator {
         final AnimatorCreator[] creators = getCreators();
         final AnimatorSet animatorSet = new AnimatorSet();
 
-        Animator mLast = null;
-        for (int i = 0; i < creators.length; i++) {
-            final Animator animator = creators[i].createAnimator(show, view);
-            if (animator == null)
-                continue;
+        Animator last = null;
+        for (AnimatorCreator creator : creators) {
+            final Animator animator = creator.createAnimator(show, view);
+            if (animator == null) continue;
 
-            if (mLast == null)
+            if (last == null) {
                 animatorSet.play(animator);
-            else
-                animatorSet.play(mLast).with(animator);
-
-            mLast = animator;
+            } else {
+                animatorSet.play(last).with(animator);
+            }
+            last = animator;
         }
 
-        if (mLast == null)
+        if (last == null) {
             return null;
-
+        }
         return animatorSet;
     }
 
