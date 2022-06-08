@@ -41,7 +41,6 @@ public abstract class BaseAnimatorCreator implements AnimatorCreator {
      */
     protected abstract Animator onCreateAnimator(boolean show, View view);
 
-
     /**
      * 动画被创建后回调
      */
@@ -60,19 +59,16 @@ public abstract class BaseAnimatorCreator implements AnimatorCreator {
     protected void onAnimationEnd(boolean show, View view) {
     }
 
-    protected static long getScaledDuration(float deltaValue, float maxValue, long maxDuration) {
-        if (maxDuration <= 0)
-            return 0;
-        if (maxValue == 0)
-            return 0;
-        if (deltaValue == 0)
-            return 0;
+    protected static long getScaledDuration(float value, float maxValue, long maxDuration) {
+        if (value == 0) return 0;
+        if (maxValue == 0) return 0;
+        if (maxDuration <= 0) return 0;
 
-        final float percent = Math.abs(deltaValue / maxValue);
-        long duration = (long) (percent * maxDuration);
-        if (duration > maxDuration)
+        final float percent = Math.abs(value / maxValue);
+        final long duration = (long) (percent * maxDuration);
+        if (duration > maxDuration) {
             return maxDuration;
-
+        }
         return duration;
     }
 }
