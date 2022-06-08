@@ -30,7 +30,6 @@ open class FDialog : IDialog {
         get() = _dialogView.backgroundView
 
     private var _state = State.Dismissed
-    private var _gravity = Gravity.NO_GRAVITY
     private var _cancelable = true
     private var _canceledOnTouchOutside = true
 
@@ -52,6 +51,8 @@ open class FDialog : IDialog {
     constructor(activity: Activity) {
         _activity = activity
         _dialogView = InternalDialogView(activity)
+
+        updateGravity()
         updateBackgroundDim()
     }
 
@@ -127,10 +128,10 @@ open class FDialog : IDialog {
             _isAnimatorCreatorModifiedInternal = false
         }
 
-    override var gravity: Int
-        get() = _gravity
+    override var gravity: Int = Gravity.CENTER
         set(value) {
-            _dialogView.containerView.gravity = value
+            field = value
+            updateGravity()
         }
 
     override var isBackgroundDim: Boolean = true
@@ -138,6 +139,10 @@ open class FDialog : IDialog {
             field = value
             updateBackgroundDim()
         }
+
+    private fun updateGravity() {
+        _dialogView.containerView.gravity = gravity
+    }
 
     private fun updateBackgroundDim() {
         if (isBackgroundDim) {
@@ -320,7 +325,7 @@ open class FDialog : IDialog {
 
     private fun setDefaultConfigBeforeShow() {
         if (_animatorCreator == null) {
-            when (_gravity) {
+            when (gravity) {
                 Gravity.CENTER -> {
                     animatorCreator = AlphaCreator()
                     _isAnimatorCreatorModifiedInternal = true
@@ -626,7 +631,6 @@ open class FDialog : IDialog {
             // 设置默认参数
             val defaultPadding = (resources.displayMetrics.widthPixels * 0.1f).toInt()
             containerView.setPadding(defaultPadding, 0, defaultPadding, 0)
-            containerView.gravity = _gravity
         }
 
         fun checkFocus(check: Boolean) {
@@ -764,12 +768,6 @@ open class FDialog : IDialog {
     }
 
     private inner class InternalContainerView(context: Context) : LinearLayout(context) {
-        override fun setGravity(gravity: Int) {
-            if (_gravity != gravity) {
-                _gravity = gravity
-                super.setGravity(gravity)
-            }
-        }
 
         override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
             val finalLeft = if (left < 0) paddingLeft else left

@@ -80,7 +80,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
 
     private val _viewTracker: ViewTracker by lazy {
         FViewTracker().apply {
-            this.setCallback(object : ViewTracker.Callback() {
+            this.callback = object : ViewTracker.Callback() {
                 override fun onUpdate(x: Int?, y: Int?, source: ViewTracker.SourceLocationInfo, target: ViewTracker.LocationInfo) {
                     if (source !is ViewTracker.ViewLocationInfo) return
 
@@ -128,7 +128,6 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
                             finalY += sourceView.height
                             direction = Direction.Bottom
                         }
-                        else -> {}
                     }
 
                     val sourceParent = sourceView.parent as View
@@ -145,7 +144,7 @@ internal class SimpleTargetDialog(private val _dialog: IDialog) : ITargetDialog 
 
                     checkTranslateBackground(direction, sourceView)
                 }
-            })
+            }
         }
     }
 
