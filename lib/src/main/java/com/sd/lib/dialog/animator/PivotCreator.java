@@ -15,8 +15,9 @@ public class PivotCreator extends BaseAnimatorCreator {
     private PivotHolder mPivotHolder;
 
     public PivotCreator(AnimatorCreator creator, PivotProvider pivotProviderX, PivotProvider pivotProviderY) {
-        if (creator == null)
+        if (creator == null) {
             throw new NullPointerException("creator is null");
+        }
 
         mCreator = creator;
         mPivotProviderX = pivotProviderX;
@@ -24,19 +25,13 @@ public class PivotCreator extends BaseAnimatorCreator {
     }
 
     protected final PivotHolder getPivotHolder() {
-        if (mPivotHolder == null)
+        if (mPivotHolder == null) {
             mPivotHolder = new PivotHolder();
+        }
         return mPivotHolder;
     }
 
-    @Override
-    protected final Animator onCreateAnimator(boolean show, View view) {
-        return mCreator.createAnimator(show, view);
-    }
-
-    @Override
-    protected void onAnimationStart(boolean show, View view) {
-        super.onAnimationStart(show, view);
+    private void initPivotProvider() {
         if (mPivotProviderX == null) {
             mPivotProviderX = new PivotProvider() {
                 @Override
@@ -53,7 +48,17 @@ public class PivotCreator extends BaseAnimatorCreator {
                 }
             };
         }
+    }
 
+    @Override
+    protected final Animator onCreateAnimator(boolean show, View view) {
+        return mCreator.createAnimator(show, view);
+    }
+
+    @Override
+    protected void onAnimationStart(boolean show, View view) {
+        super.onAnimationStart(show, view);
+        initPivotProvider();
         getPivotHolder().setPivotXY(mPivotProviderX.getPivot(show, view), mPivotProviderY.getPivot(show, view), view);
     }
 
@@ -67,8 +72,7 @@ public class PivotCreator extends BaseAnimatorCreator {
         private final float[] mPivotXYOriginal = new float[2];
 
         public void setPivotXY(float pivotX, float pivotY, View view) {
-            if (view == null)
-                return;
+            if (view == null) return;
 
             mPivotXYOriginal[0] = view.getPivotX();
             mPivotXYOriginal[1] = view.getPivotY();
@@ -78,9 +82,7 @@ public class PivotCreator extends BaseAnimatorCreator {
         }
 
         public void restore(View view) {
-            if (view == null)
-                return;
-
+            if (view == null) return;
             view.setPivotX(mPivotXYOriginal[0]);
             view.setPivotY(mPivotXYOriginal[1]);
         }
