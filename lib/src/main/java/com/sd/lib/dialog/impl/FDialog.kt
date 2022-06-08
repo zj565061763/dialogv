@@ -33,7 +33,6 @@ open class FDialog : IDialog {
     private var _gravity = Gravity.NO_GRAVITY
     private var _cancelable = true
     private var _canceledOnTouchOutside = true
-    private var _isBackgroundDim = false
 
     private var _animatorCreator: AnimatorCreator? = null
     private var _animatorDuration: Long = 0
@@ -53,7 +52,7 @@ open class FDialog : IDialog {
     constructor(activity: Activity) {
         _activity = activity
         _dialogView = InternalDialogView(activity)
-        isBackgroundDim = true
+        updateBackgroundDim()
     }
 
     override var isDebug: Boolean = false
@@ -134,17 +133,20 @@ open class FDialog : IDialog {
             _dialogView.containerView.gravity = value
         }
 
-    override var isBackgroundDim: Boolean
-        get() = _isBackgroundDim
+    override var isBackgroundDim: Boolean = true
         set(value) {
-            _isBackgroundDim = value
-            if (value) {
-                val color = context.resources.getColor(R.color.lib_dialogv_background_dim)
-                _dialogView.backgroundView.setBackgroundColor(color)
-            } else {
-                _dialogView.backgroundView.setBackgroundColor(0)
-            }
+            field = value
+            updateBackgroundDim()
         }
+
+    private fun updateBackgroundDim() {
+        if (isBackgroundDim) {
+            val color = context.resources.getColor(R.color.lib_dialogv_background_dim)
+            _dialogView.backgroundView.setBackgroundColor(color)
+        } else {
+            _dialogView.backgroundView.setBackgroundColor(0)
+        }
+    }
 
     override var display: IDialog.Display = ActivityDisplay()
 
@@ -404,7 +406,7 @@ open class FDialog : IDialog {
 
     private fun createAnimator(show: Boolean): Animator? {
         // 背景View动画
-        val animatorBackground = if (_isBackgroundDim) {
+        val animatorBackground = if (isBackgroundDim) {
             _backgroundViewAnimatorCreator.createAnimator(show, _dialogView.backgroundView)
         } else {
             null

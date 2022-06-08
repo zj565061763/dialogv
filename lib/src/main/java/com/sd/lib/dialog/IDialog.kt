@@ -27,12 +27,12 @@ interface IDialog {
     var animatorCreator: AnimatorCreator?
 
     /**
-     * 重力属性[android.view.Gravity]
+     * 重力属性，默认[android.view.Gravity.CENTER]
      */
     var gravity: Int
 
     /**
-     * 背景模糊
+     * 是否半透明背景，默认true
      */
     var isBackgroundDim: Boolean
 
