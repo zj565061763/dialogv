@@ -13,8 +13,9 @@ public class SlideTopBottomParentCreator extends SlideVerticalCreator {
         if (parent instanceof View) {
             final View parentView = (View) parent;
             final int distance = parentView.getHeight() - view.getTop();
-            if (distance > 0)
+            if (distance > 0) {
                 return distance;
+            }
         }
         return view.getHeight();
     }

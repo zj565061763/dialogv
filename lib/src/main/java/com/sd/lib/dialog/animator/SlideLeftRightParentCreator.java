@@ -13,8 +13,9 @@ public class SlideLeftRightParentCreator extends SlideHorizontalCreator {
         if (parent instanceof View) {
             final View parentView = (View) parent;
             final int distance = parentView.getWidth() - view.getLeft();
-            if (distance > 0)
+            if (distance > 0) {
                 return distance;
+            }
         }
         return view.getWidth();
     }
