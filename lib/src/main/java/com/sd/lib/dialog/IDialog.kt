@@ -47,6 +47,36 @@ interface IDialog {
     var display: Display
 
     /**
+     * 设置上下左右间距，如果某个方向的值小于0，则该方向的padding保持原有的值不变
+     */
+    fun setPadding(left: Int, top: Int, right: Int, bottom: Int)
+
+    /**
+     * 左边边距
+     */
+    val paddingLeft: Int
+
+    /**
+     * 顶部边距
+     */
+    val paddingTop: Int
+
+    /**
+     * 右边边距
+     */
+    val paddingRight: Int
+
+    /**
+     * 底部边距
+     */
+    val paddingBottom: Int
+
+    /**
+     * 窗口是否正在显示
+     */
+    val isShowing: Boolean
+
+    /**
      * 窗口的内容view
      */
     val contentView: View?
@@ -85,36 +115,6 @@ interface IDialog {
      * 设置窗口显示监听
      */
     fun setOnShowListener(listener: OnShowListener?)
-
-    /**
-     * 设置上下左右间距，如果某个方向的值小于0，则该方向的padding保持原有的值不变
-     */
-    fun setPadding(left: Int, top: Int, right: Int, bottom: Int)
-
-    /**
-     * 左边边距
-     */
-    val paddingLeft: Int
-
-    /**
-     * 顶部边距
-     */
-    val paddingTop: Int
-
-    /**
-     * 右边边距
-     */
-    val paddingRight: Int
-
-    /**
-     * 底部边距
-     */
-    val paddingBottom: Int
-
-    /**
-     * 窗口是否正在显示
-     */
-    val isShowing: Boolean
 
     /**
      * 显示窗口
