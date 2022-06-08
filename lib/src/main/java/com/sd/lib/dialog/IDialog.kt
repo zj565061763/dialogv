@@ -27,6 +27,11 @@ interface IDialog {
     var animatorCreator: AnimatorCreator?
 
     /**
+     * 动画时长
+     */
+    var animatorDuration: Long
+
+    /**
      * 重力属性，默认[android.view.Gravity.CENTER]
      */
     var gravity: Int
@@ -80,11 +85,6 @@ interface IDialog {
      * 设置窗口显示监听
      */
     fun setOnShowListener(listener: OnShowListener?)
-
-    /**
-     * 设置动画时长
-     */
-    fun setAnimatorDuration(duration: Long)
 
     /**
      * 设置上下左右间距，如果某个方向的值小于0，则该方向的padding保持原有的值不变

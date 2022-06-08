@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         /**
          * 设置动画时长
          */
-        dialog.setAnimatorDuration(1000)
+        dialog.animatorDuration = 1000
 
         return dialog
     }

@@ -33,8 +33,6 @@ open class FDialog : IDialog {
     private var _cancelable = true
     private var _canceledOnTouchOutside = true
 
-    private var _animatorDuration: Long = 0
-
     private var _lockDialog = false
     private var _tryStartShowAnimator = false
     private var _isAnimatorCreatorModifiedInternal = false
@@ -126,6 +124,8 @@ open class FDialog : IDialog {
             _isAnimatorCreatorModifiedInternal = false
         }
 
+    override var animatorDuration: Long = 0
+
     override var gravity: Int = Gravity.CENTER
         set(value) {
             field = value
@@ -152,10 +152,6 @@ open class FDialog : IDialog {
     }
 
     override var display: IDialog.Display = ActivityDisplay()
-
-    override fun setAnimatorDuration(duration: Long) {
-        _animatorDuration = duration
-    }
 
     override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
         _dialogView.containerView.setPadding(left, top, right, bottom)
@@ -436,8 +432,8 @@ open class FDialog : IDialog {
             animatorContent ?: animatorBackground
         }
 
-        if (_animatorDuration > 0) {
-            animator?.duration = _animatorDuration
+        if (animatorDuration > 0) {
+            animator?.duration = animatorDuration
         }
 
         if (isDebug) {
