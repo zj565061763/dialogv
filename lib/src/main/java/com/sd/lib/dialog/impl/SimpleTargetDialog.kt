@@ -59,7 +59,7 @@ internal class SimpleTargetDialog(
     }
 
     override fun update() {
-        _viewTracker.update()
+        _viewUpdater.notifyUpdatable()
     }
 
     override fun show() {
@@ -78,7 +78,7 @@ internal class SimpleTargetDialog(
             }
         }.apply {
             this.setUpdatable {
-                update()
+                _viewTracker.update()
             }
         }
     }
@@ -87,6 +87,7 @@ internal class SimpleTargetDialog(
         FViewTracker().apply {
             this.callback = object : ViewTracker.Callback() {
                 override fun onUpdate(x: Int?, y: Int?, source: ViewTracker.SourceLocationInfo, target: ViewTracker.LocationInfo) {
+                    if (!_viewUpdater.isStarted) return
                     if (source !is ViewTracker.ViewLocationInfo) return
 
                     val sourceView = source.view!!
@@ -189,12 +190,11 @@ internal class SimpleTargetDialog(
     }
 
     fun onStart() {
-        val position = _position ?: return
         if (_viewUpdater.view == null) return
         if (_viewTracker.sourceLocationInfo == null) return
         if (_viewTracker.targetLocationInfo == null) return
 
-        when (position) {
+        when (_position) {
             Position.LeftOutside -> {
                 _viewTracker.position = ViewTracker.Position.Left
                 setDefaultAnimator(PivotPercentCreator(ScaleXYCreator(), 1.0f, 0.5f))
@@ -268,9 +268,7 @@ internal class SimpleTargetDialog(
     fun onStop() {
         _viewUpdater.stop()
         _viewUpdater.view = null
-
         _viewTracker.sourceLocationInfo = null
-        _viewTracker.targetLocationInfo = null
 
         restoreAnimator()
         _dialogBackup.restore(_dialog)
