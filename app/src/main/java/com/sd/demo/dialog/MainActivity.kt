@@ -70,6 +70,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             Log.i(TAG, "onShow")
         }
         /**
+         * 设置取消监听
+         */
+        dialog.setOnCancelListener {
+            Log.i(TAG, "onCancel")
+        }
+
+        /**
          * 设置窗口内容view动画创建对象，此处设置为透明度变化，可以实现AnimatorCreator接口来实现自定义动画
          *
          * 默认规则:
