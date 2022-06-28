@@ -117,6 +117,11 @@ interface IDialog {
     fun setOnShowListener(listener: OnShowListener?)
 
     /**
+     * 设置窗口取消监听
+     */
+    fun setOnCancelListener(listener: OnCancelListener?)
+
+    /**
      * 显示窗口
      */
     fun show()
@@ -125,6 +130,11 @@ interface IDialog {
      * 关闭窗口
      */
     fun dismiss()
+
+    /**
+     * 取消
+     */
+    fun cancel()
 
     /**
      * 延迟多久后关闭dialog
@@ -161,6 +171,16 @@ interface IDialog {
          * 显示后回调
          */
         fun onShow(dialog: IDialog)
+    }
+
+    /**
+     * 取消监听
+     */
+    fun interface OnCancelListener {
+        /**
+         * 取消回调
+         */
+        fun onCancel(dialog: IDialog)
     }
 
     interface Display {

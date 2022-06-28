@@ -39,9 +39,11 @@ open class FDialog : IDialog {
 
     private var _isCreated = false
     private var _isCover = false
+    private var _isCanceled = false
 
     private var _onDismissListener: IDialog.OnDismissListener? = null
     private var _onShowListener: IDialog.OnShowListener? = null
+    private var _onCancelListener: IDialog.OnCancelListener? = null
 
     private val _dialogHandler by lazy { Handler(Looper.getMainLooper()) }
 
@@ -118,6 +120,10 @@ open class FDialog : IDialog {
         _onShowListener = listener
     }
 
+    override fun setOnCancelListener(listener: IDialog.OnCancelListener?) {
+        _onCancelListener = listener
+    }
+
     override var animatorCreator: AnimatorCreator? = null
         set(value) {
             field = value
@@ -183,6 +189,11 @@ open class FDialog : IDialog {
             _dialogHandler.removeCallbacks(_dismissRunnable)
             _dialogHandler.post(_dismissRunnable)
         }
+    }
+
+    override fun cancel() {
+        _isCanceled = true
+        dismiss()
     }
 
     private val _showRunnable = Runnable {
@@ -265,6 +276,12 @@ open class FDialog : IDialog {
                     }
                 }
                 State.Dismissed -> {
+                    if (_isCanceled) {
+                        _isCanceled = false
+                        _dialogHandler.post {
+                            _onCancelListener?.onCancel(this@FDialog)
+                        }
+                    }
                     _dialogHandler.post {
                         _onDismissListener?.onDismiss(this@FDialog)
                     }
@@ -509,9 +526,9 @@ open class FDialog : IDialog {
     protected open fun onBackPressed() {
         if (_cancelable) {
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "onBackPressed try dismiss ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "onBackPressed try cancel ${this@FDialog}")
             }
-            dismiss()
+            cancel()
         }
     }
 
@@ -703,9 +720,9 @@ open class FDialog : IDialog {
                 if (isTouchOutside) {
                     if (_cancelable && _canceledOnTouchOutside) {
                         if (isDebug) {
-                            Log.i(IDialog::class.java.simpleName, "touch outside try dismiss ${this@FDialog}")
+                            Log.i(IDialog::class.java.simpleName, "touch outside try cancel ${this@FDialog}")
                         }
-                        dismiss()
+                        cancel()
                         return true
                     }
                 }
