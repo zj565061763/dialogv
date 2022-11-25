@@ -7,13 +7,10 @@ internal object Utils {
     @JvmStatic
     fun getAnimatorDuration(animator: Animator): Long {
         var duration = animator.duration
-        if (duration > 0) {
-            return duration
-        }
+        if (duration > 0) return duration
 
         if (animator is AnimatorSet) {
-            val list: List<Animator> = animator.childAnimations
-            for (item in list) {
+            for (item in animator.childAnimations) {
                 val itemDuration = getAnimatorDuration(item)
                 if (itemDuration > duration) {
                     duration = itemDuration
