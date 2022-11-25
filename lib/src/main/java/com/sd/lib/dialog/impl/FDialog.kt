@@ -195,7 +195,7 @@ open class FDialog(activity: Activity) : IDialog {
 
         if (_animatorHandler.isHideAnimatorStarted) {
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "cancel HideAnimator before show ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "cancel dismiss animator before show ${this@FDialog}")
             }
             _animatorHandler.cancelHideAnimator()
         }
@@ -225,7 +225,7 @@ open class FDialog(activity: Activity) : IDialog {
         setState(State.TryDismiss)
         if (_animatorHandler.isShowAnimatorStarted) {
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "cancel ShowAnimator before dismiss ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "cancel show animator before dismiss ${this@FDialog}")
             }
             _animatorHandler.cancelShowAnimator()
         }
