@@ -21,10 +21,10 @@ import com.sd.lib.dialog.R
 import com.sd.lib.dialog.animator.*
 import com.sd.lib.dialog.display.ActivityDisplay
 
-open class FDialog : IDialog {
-    private val _activity: Activity
+open class FDialog(activity: Activity) : IDialog {
+    private val _activity = activity
+    private val _dialogView = InternalDialogView(activity)
 
-    private val _dialogView: InternalDialogView
     private var _contentView: View? = null
     internal val backgroundView: View
         get() = _dialogView.backgroundView
@@ -46,14 +46,6 @@ open class FDialog : IDialog {
     private var _onCancelListener: IDialog.OnCancelListener? = null
 
     private val _dialogHandler by lazy { Handler(Looper.getMainLooper()) }
-
-    constructor(activity: Activity) {
-        _activity = activity
-        _dialogView = InternalDialogView(activity)
-
-        updateGravity()
-        updateBackgroundDim()
-    }
 
     override var isDebug: Boolean = false
 
@@ -883,6 +875,11 @@ open class FDialog : IDialog {
                 dismiss()
             }
         }
+    }
+
+    init {
+        updateGravity()
+        updateBackgroundDim()
     }
 
     companion object {
