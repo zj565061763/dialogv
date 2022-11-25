@@ -3,15 +3,16 @@ package com.sd.lib.dialog.impl
 import android.app.Activity
 
 internal object FDialogHolder {
-    private val mapActivityDialog = mutableMapOf<Activity, MutableCollection<FDialog>>()
+    private val dialogHolder = mutableMapOf<Activity, MutableCollection<FDialog>>()
 
     @JvmStatic
     fun addDialog(dialog: FDialog) {
         val activity = dialog.ownerActivity
-        var holder = mapActivityDialog[activity]
+
+        var holder = dialogHolder[activity]
         if (holder == null) {
             holder = mutableListOf()
-            mapActivityDialog[activity] = holder
+            dialogHolder[activity] = holder
         }
 
         holder.lastOrNull()?.notifyCover()
@@ -21,7 +22,7 @@ internal object FDialogHolder {
     @JvmStatic
     fun removeDialog(dialog: FDialog) {
         val activity = dialog.ownerActivity
-        val holder = mapActivityDialog[activity] ?: return
+        val holder = dialogHolder[activity] ?: return
 
         val remove = holder.remove(dialog)
         if (remove) {
@@ -29,24 +30,24 @@ internal object FDialogHolder {
         }
 
         if (holder.isEmpty()) {
-            mapActivityDialog.remove(activity)
+            dialogHolder.remove(activity)
         }
     }
 
     @JvmStatic
     fun get(activity: Activity): List<FDialog>? {
-        val holder = mapActivityDialog[activity] ?: return null
+        val holder = dialogHolder[activity] ?: return null
         return holder.toMutableList()
     }
 
     @JvmStatic
     fun getLast(activity: Activity): FDialog? {
-        val holder = mapActivityDialog[activity] ?: return null
+        val holder = dialogHolder[activity] ?: return null
         return holder.lastOrNull()
     }
 
     @JvmStatic
     fun remove(activity: Activity) {
-        mapActivityDialog.remove(activity)
+        dialogHolder.remove(activity)
     }
 }
