@@ -758,7 +758,7 @@ open class FDialog(activity: Activity) : IDialog {
         override fun onViewRemoved(child: View) {
             super.onViewRemoved(child)
             if (child === backgroundView || child === containerView) {
-                error("Can not remove dialog child.")
+                error("Can not remove child from dialog view.")
             }
         }
     }
