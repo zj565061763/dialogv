@@ -229,7 +229,6 @@ open class FDialog(activity: Activity) : IDialog {
             _animatorHandler.cancelShowAnimator()
         }
 
-        _lockDialog = true
         _animatorHandler.setHideAnimator(createAnimator(false))
         if (_animatorHandler.startHideAnimator()) {
             // 等待动画结束后让窗口消失
@@ -247,6 +246,7 @@ open class FDialog(activity: Activity) : IDialog {
 
             if (state.isDismissPart) {
                 _showAnimatorFlag = false
+                _lockDialog = true
             }
 
             when (state) {
