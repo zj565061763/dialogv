@@ -148,7 +148,7 @@ open class FDialog(activity: Activity) : IDialog {
 
     override var display: IDialog.Display = ActivityDisplay()
 
-    override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
+    final override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
         containerView.setPadding(left, top, right, bottom)
     }
 
@@ -587,10 +587,6 @@ open class FDialog(activity: Activity) : IDialog {
                 containerView,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
-
-            // 设置默认参数
-            val defaultPadding = (resources.displayMetrics.widthPixels * 0.1f).toInt()
-            containerView.setPadding(defaultPadding, 0, defaultPadding, 0)
         }
 
         fun checkFocus(check: Boolean) {
@@ -829,6 +825,10 @@ open class FDialog(activity: Activity) : IDialog {
     init {
         gravity = Gravity.CENTER
         isBackgroundDim = true
+
+        (activity.resources.displayMetrics.widthPixels * 0.1f).toInt().let { padding ->
+            setPadding(padding, 0, padding, 0)
+        }
     }
 
     companion object {
