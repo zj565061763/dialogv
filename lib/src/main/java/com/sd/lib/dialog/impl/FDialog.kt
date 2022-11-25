@@ -927,8 +927,7 @@ private object FDialogHolder {
     }
 
     fun getLast(activity: Activity): FDialog? {
-        val holder = dialogHolder[activity] ?: return null
-        return holder.lastOrNull()
+        return dialogHolder[activity]?.lastOrNull()
     }
 
     fun remove(activity: Activity) {
