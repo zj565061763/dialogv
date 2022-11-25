@@ -65,10 +65,6 @@ open class FDialog(activity: Activity) : IDialog {
     }
 
     override fun setContentView(view: View?) {
-        setContentViewInternal(view)
-    }
-
-    private fun setContentViewInternal(view: View?) {
         val old = _contentView
         if (old === view) return
 
