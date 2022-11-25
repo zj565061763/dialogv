@@ -3,7 +3,7 @@ package com.sd.lib.dialog.impl
 import android.app.Activity
 
 internal object FDialogHolder {
-    private val dialogHolder = mutableMapOf<Activity, MutableCollection<FDialog>>()
+    private val dialogHolder: MutableMap<Activity, MutableCollection<FDialog>> = hashMapOf()
 
     @JvmStatic
     fun addDialog(dialog: FDialog) {
