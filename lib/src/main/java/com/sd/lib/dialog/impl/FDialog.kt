@@ -172,16 +172,11 @@ open class FDialog(activity: Activity) : IDialog {
     }
 
     private val _showRunnable = Runnable {
-        val isFinishing = ownerActivity.isFinishing
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "try show isFinishing:${isFinishing} ${this@FDialog}")
-        }
-        if (isFinishing) {
-            return@Runnable
-        }
+        if (ownerActivity.isFinishing) return@Runnable
+        if (_state.isShowPart) return@Runnable
 
-        if (_state.isShowPart) {
-            return@Runnable
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "try show $_state ${this@FDialog}")
         }
 
         setState(State.TryShow)
