@@ -26,8 +26,8 @@ open class FDialog(activity: Activity) : IDialog {
     private val _dialogView = InternalDialogView(activity)
 
     private var _contentView: View? = null
-    internal val backgroundView: View
-        get() = _dialogView.backgroundView
+    internal val backgroundView get() = _dialogView.backgroundView
+    private val containerView get() = _dialogView.containerView
 
     private var _state = State.Dismissed
     private var _cancelable = true
@@ -59,7 +59,7 @@ open class FDialog(activity: Activity) : IDialog {
         val view = if (layoutId == 0) {
             null
         } else {
-            LayoutInflater.from(context).inflate(layoutId, _dialogView.containerView, false)
+            LayoutInflater.from(context).inflate(layoutId, containerView, false)
         }
         setContentView(view)
     }
@@ -71,7 +71,7 @@ open class FDialog(activity: Activity) : IDialog {
         _contentView = view
 
         if (old != null) {
-            _dialogView.containerView.removeView(old)
+            containerView.removeView(old)
         }
 
         if (view != null) {
@@ -80,7 +80,7 @@ open class FDialog(activity: Activity) : IDialog {
                 p.width = it.width
                 p.height = it.height
             }
-            _dialogView.containerView.addView(view, p)
+            containerView.addView(view, p)
         }
 
         onContentViewChanged(old, view)
@@ -120,31 +120,31 @@ open class FDialog(activity: Activity) : IDialog {
     }
 
     final override var gravity: Int by Delegates.observable(Gravity.NO_GRAVITY) { _, _, newValue ->
-        _dialogView.containerView.gravity = newValue
+        containerView.gravity = newValue
     }
 
     final override var isBackgroundDim: Boolean by Delegates.observable(false) { _, _, newValue ->
         if (newValue) {
             val color = context.resources.getColor(R.color.lib_dialogv_background_dim)
-            _dialogView.backgroundView.setBackgroundColor(color)
+            backgroundView.setBackgroundColor(color)
         } else {
-            _dialogView.backgroundView.setBackgroundColor(0)
+            backgroundView.setBackgroundColor(0)
         }
     }
 
     override var display: IDialog.Display = ActivityDisplay()
 
     override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
-        _dialogView.containerView.setPadding(left, top, right, bottom)
+        containerView.setPadding(left, top, right, bottom)
     }
 
-    override val paddingLeft: Int get() = _dialogView.containerView.paddingLeft
+    override val paddingLeft: Int get() = containerView.paddingLeft
 
-    override val paddingTop: Int get() = _dialogView.containerView.paddingTop
+    override val paddingTop: Int get() = containerView.paddingTop
 
-    override val paddingRight: Int get() = _dialogView.containerView.paddingRight
+    override val paddingRight: Int get() = containerView.paddingRight
 
-    override val paddingBottom: Int get() = _dialogView.containerView.paddingBottom
+    override val paddingBottom: Int get() = containerView.paddingBottom
 
     override val isShowing: Boolean get() = _state == State.Shown
 
@@ -286,8 +286,8 @@ open class FDialog(activity: Activity) : IDialog {
 
     private fun startShowAnimator() {
         if (_showAnimatorFlag) {
-            val width = _dialogView.containerView.width
-            val height = _dialogView.containerView.height
+            val width = containerView.width
+            val height = containerView.height
             if (width > 0 && height > 0) {
                 if (isDebug) {
                     Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height} ${this@FDialog}")
@@ -399,7 +399,7 @@ open class FDialog(activity: Activity) : IDialog {
     private fun createAnimator(show: Boolean): Animator? {
         // 背景View动画
         val animatorBackground = if (isBackgroundDim) {
-            _backgroundViewAnimatorCreator.createAnimator(show, _dialogView.backgroundView)
+            _backgroundViewAnimatorCreator.createAnimator(show, backgroundView)
         } else {
             null
         }
