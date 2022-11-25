@@ -775,10 +775,10 @@ open class FDialog(activity: Activity) : IDialog {
             val finalRight = if (right < 0) paddingRight else right
             val finalBottom = if (bottom < 0) paddingBottom else bottom
 
-            if (finalLeft != paddingLeft ||
-                finalTop != paddingTop ||
-                finalRight != paddingRight ||
-                finalBottom != paddingBottom
+            if (finalLeft != paddingLeft
+                || finalTop != paddingTop
+                || finalRight != paddingRight
+                || finalBottom != paddingBottom
             ) {
                 super.setPadding(finalLeft, finalTop, finalRight, finalBottom)
             }
