@@ -176,7 +176,7 @@ open class FDialog(activity: Activity) : IDialog {
         if (_state.isShowPart) return@Runnable
 
         if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "try show $_state ${this@FDialog}")
+            Log.i(IDialog::class.java.simpleName, "try show state:$_state ${this@FDialog}")
         }
 
         setState(State.TryShow)
@@ -192,7 +192,7 @@ open class FDialog(activity: Activity) : IDialog {
     private val _dismissRunnable = Runnable {
         val isFinishing = ownerActivity.isFinishing
         if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "try dismiss isFinishing:${isFinishing} ${this@FDialog}")
+            Log.i(IDialog::class.java.simpleName, "try dismiss state:$_state isFinishing:${isFinishing} ${this@FDialog}")
         }
 
         if (isFinishing) {
