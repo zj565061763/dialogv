@@ -533,6 +533,7 @@ open class FDialog(activity: Activity) : IDialog {
             Log.i(IDialog::class.java.simpleName, "display showDialog ${this@FDialog}")
         }
         display.showDialog(_dialogView)
+
         setState(State.Shown)
     }
 
