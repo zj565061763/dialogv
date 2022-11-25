@@ -515,6 +515,9 @@ open class FDialog(activity: Activity) : IDialog {
         }
 
         _isStarted = true
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "notifyStart ${this@FDialog}")
+        }
         onStart()
         if (_state.isDismissPart) {
             if (isDebug) {
