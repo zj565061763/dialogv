@@ -288,7 +288,9 @@ open class FDialog(activity: Activity) : IDialog {
 
     override fun startDismissRunnable(delay: Long) {
         stopDismissRunnable()
-        _mainHandler.postDelayed(_delayedDismissRunnable, delay)
+        if (_state.isShowPart) {
+            _mainHandler.postDelayed(_delayedDismissRunnable, delay)
+        }
     }
 
     override fun stopDismissRunnable() {
