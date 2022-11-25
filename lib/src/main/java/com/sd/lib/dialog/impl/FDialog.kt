@@ -691,7 +691,7 @@ open class FDialog(activity: Activity) : IDialog {
         override fun onAttachedToWindow() {
             super.onAttachedToWindow()
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "onAttachedToWindow ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "dialog onAttachedToWindow ${this@FDialog}")
             }
             checkFocus(true)
         }
@@ -699,7 +699,7 @@ open class FDialog(activity: Activity) : IDialog {
         override fun onDetachedFromWindow() {
             super.onDetachedFromWindow()
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "onDetachedFromWindow ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "dialog onDetachedFromWindow ${this@FDialog}")
             }
             checkFocus(false)
         }
