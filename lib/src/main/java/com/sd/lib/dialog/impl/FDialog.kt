@@ -36,12 +36,19 @@ open class FDialog(activity: Activity) : IDialog {
     private var _lockDialog by Delegates.observable(false) { _, oldValue, newValue ->
         if (oldValue != newValue) {
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "lock dialog $newValue ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "_lockDialog $newValue ${this@FDialog}")
             }
         }
     }
 
-    private var _showAnimatorFlag = false
+    private var _showAnimatorFlag by Delegates.observable(false) { _, oldValue, newValue ->
+        if (oldValue != newValue) {
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "_showAnimatorFlag $newValue ${this@FDialog}")
+            }
+        }
+    }
+
     private var _isAnimatorCreatorModifiedInternal = false
 
     private var _isCreated = false
@@ -239,7 +246,7 @@ open class FDialog(activity: Activity) : IDialog {
             }
 
             if (state.isDismissPart) {
-                setShowAnimatorFlag(false)
+                _showAnimatorFlag = false
             }
 
             when (state) {
@@ -264,15 +271,6 @@ open class FDialog(activity: Activity) : IDialog {
         }
     }
 
-    private fun setShowAnimatorFlag(flag: Boolean) {
-        if (_showAnimatorFlag != flag) {
-            _showAnimatorFlag = flag
-            if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "setShowAnimatorFlag:${flag} ${this@FDialog}")
-            }
-        }
-    }
-
     private fun startShowAnimator() {
         if (_showAnimatorFlag) {
             val width = containerView.width
@@ -281,7 +279,7 @@ open class FDialog(activity: Activity) : IDialog {
                 if (isDebug) {
                     Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height} ${this@FDialog}")
                 }
-                setShowAnimatorFlag(false)
+                _showAnimatorFlag = false
                 _animatorHandler.setShowAnimator(createAnimator(true))
                 _animatorHandler.startShowAnimator()
             }
@@ -785,7 +783,7 @@ open class FDialog(activity: Activity) : IDialog {
         override fun onAttachedToWindow() {
             super.onAttachedToWindow()
             if (_state.isShowPart) {
-                setShowAnimatorFlag(true)
+                _showAnimatorFlag = true
                 startShowAnimator()
             }
         }
