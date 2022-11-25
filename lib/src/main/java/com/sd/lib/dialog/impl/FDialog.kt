@@ -213,7 +213,7 @@ open class FDialog(activity: Activity) : IDialog {
             _animatorHandler.cancelShowAnimator()
             _animatorHandler.cancelHideAnimator()
             _lockDialog = true
-            dismissDialog(false)
+            dismissDialog()
             return@Runnable
         }
 
@@ -233,7 +233,7 @@ open class FDialog(activity: Activity) : IDialog {
         if (_animatorHandler.startHideAnimator()) {
             // 等待动画结束后让窗口消失
         } else {
-            dismissDialog(false)
+            dismissDialog()
         }
     }
 
@@ -522,7 +522,7 @@ open class FDialog(activity: Activity) : IDialog {
         setState(State.Shown)
     }
 
-    private fun dismissDialog(isAnimator: Boolean) {
+    private fun dismissDialog(isAnimator: Boolean = false) {
         if (isDebug) {
             Log.e(IDialog::class.java.simpleName, "dismissDialog state:$_state isAnimator:${isAnimator} ${this@FDialog}")
         }
