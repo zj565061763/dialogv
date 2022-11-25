@@ -45,7 +45,7 @@ open class FDialog(activity: Activity) : IDialog {
     private var _onShowListener: IDialog.OnShowListener? = null
     private var _onCancelListener: IDialog.OnCancelListener? = null
 
-    private val _dialogHandler by lazy { Handler(Looper.getMainLooper()) }
+    private val _mainHandler by lazy { Handler(Looper.getMainLooper()) }
 
     override var isDebug: Boolean = false
 
@@ -169,8 +169,8 @@ open class FDialog(activity: Activity) : IDialog {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             _showRunnable.run()
         } else {
-            _dialogHandler.removeCallbacks(_showRunnable)
-            _dialogHandler.post(_showRunnable)
+            _mainHandler.removeCallbacks(_showRunnable)
+            _mainHandler.post(_showRunnable)
         }
     }
 
@@ -178,8 +178,8 @@ open class FDialog(activity: Activity) : IDialog {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             _dismissRunnable.run()
         } else {
-            _dialogHandler.removeCallbacks(_dismissRunnable)
-            _dialogHandler.post(_dismissRunnable)
+            _mainHandler.removeCallbacks(_dismissRunnable)
+            _mainHandler.post(_dismissRunnable)
         }
     }
 
@@ -263,18 +263,18 @@ open class FDialog(activity: Activity) : IDialog {
 
             when (state) {
                 State.Shown -> {
-                    _dialogHandler.post {
+                    _mainHandler.post {
                         _onShowListener?.onShow(this@FDialog)
                     }
                 }
                 State.Dismissed -> {
                     if (_isCanceled) {
                         _isCanceled = false
-                        _dialogHandler.post {
+                        _mainHandler.post {
                             _onCancelListener?.onCancel(this@FDialog)
                         }
                     }
-                    _dialogHandler.post {
+                    _mainHandler.post {
                         _onDismissListener?.onDismiss(this@FDialog)
                     }
                 }
@@ -318,11 +318,11 @@ open class FDialog(activity: Activity) : IDialog {
 
     override fun startDismissRunnable(delay: Long) {
         stopDismissRunnable()
-        _dialogHandler.postDelayed(_delayedDismissRunnable, delay)
+        _mainHandler.postDelayed(_delayedDismissRunnable, delay)
     }
 
     override fun stopDismissRunnable() {
-        _dialogHandler.removeCallbacks(_delayedDismissRunnable)
+        _mainHandler.removeCallbacks(_delayedDismissRunnable)
     }
 
     private val _delayedDismissRunnable = Runnable { dismiss() }
