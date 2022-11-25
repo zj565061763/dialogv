@@ -748,14 +748,14 @@ open class FDialog(activity: Activity) : IDialog {
         override fun onViewAdded(child: View) {
             super.onViewAdded(child)
             if (child !== backgroundView && child !== containerView) {
-                throw RuntimeException("can not add view to dialog view")
+                error("Can not add $child to dialog view.")
             }
         }
 
         override fun onViewRemoved(child: View) {
             super.onViewRemoved(child)
             if (child === backgroundView || child === containerView) {
-                throw RuntimeException("can not remove dialog child")
+                error("Can not remove dialog child.")
             }
         }
     }
