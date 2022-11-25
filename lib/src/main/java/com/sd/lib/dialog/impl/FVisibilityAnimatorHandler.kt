@@ -19,7 +19,7 @@ internal class FVisibilityAnimatorHandler {
         if (old !== animator) {
             old?.removeListener(_showAnimatorListener)
             _showAnimator = animator
-            animator?.addListener(_showAnimatorListener)
+            _showAnimator?.addListener(_showAnimatorListener)
         }
     }
 
@@ -70,7 +70,7 @@ internal class FVisibilityAnimatorHandler {
         if (old !== animator) {
             old?.removeListener(_hideAnimatorListener)
             _hideAnimator = animator
-            animator?.addListener(_hideAnimatorListener)
+            _hideAnimator?.addListener(_hideAnimatorListener)
         }
     }
 
