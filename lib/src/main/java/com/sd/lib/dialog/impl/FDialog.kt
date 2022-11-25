@@ -780,9 +780,19 @@ open class FDialog(activity: Activity) : IDialog {
 
         override fun onAttachedToWindow() {
             super.onAttachedToWindow()
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "container onAttachedToWindow state:$_state ${this@FDialog}")
+            }
             if (_state.isShowPart) {
                 _showAnimatorFlag = true
                 startShowAnimator()
+            }
+        }
+
+        override fun onDetachedFromWindow() {
+            super.onDetachedFromWindow()
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "container onDetachedFromWindow state:$_state ${this@FDialog}")
             }
         }
     }
