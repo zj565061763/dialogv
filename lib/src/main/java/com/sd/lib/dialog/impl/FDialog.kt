@@ -616,10 +616,6 @@ open class FDialog(activity: Activity) : IDialog {
 
         private val _checkFocusRunnable = object : Runnable {
             override fun run() {
-                if (isDebug) {
-                    Log.i(IDialog::class.java.simpleName, "checkFocusRunnable ${this@FDialog}")
-                }
-
                 if (!this@InternalDialogView.isAttachedToWindow) return
                 if (FDialogHolder.getLast(_activity) == this@FDialog) {
                     if (!hasFocus()) {
