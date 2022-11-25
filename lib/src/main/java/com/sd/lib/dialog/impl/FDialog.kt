@@ -529,6 +529,9 @@ open class FDialog(activity: Activity) : IDialog {
         _targetDialog?.onStart()
         setDefaultConfigBeforeShow()
 
+        if (isDebug) {
+            Log.i(IDialog::class.java.simpleName, "display showDialog ${this@FDialog}")
+        }
         display.showDialog(_dialogView)
         setState(State.Shown)
     }
@@ -542,6 +545,9 @@ open class FDialog(activity: Activity) : IDialog {
         FDialogHolder.removeDialog(this@FDialog)
 
         if (_dialogView.isAttachedToWindow) {
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "display dismissDialog ${this@FDialog}")
+            }
             display.dismissDialog(_dialogView)
         }
 
