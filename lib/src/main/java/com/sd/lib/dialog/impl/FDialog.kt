@@ -516,7 +516,7 @@ open class FDialog(activity: Activity) : IDialog {
 
         _isStarted = true
         if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyStart ${this@FDialog}")
+            Log.i(IDialog::class.java.simpleName, "notify onStart ${this@FDialog}")
         }
         onStart()
         if (_state.isDismissPart) {
@@ -553,6 +553,9 @@ open class FDialog(activity: Activity) : IDialog {
 
         if (_isStarted) {
             _isStarted = false
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "notify onStop ${this@FDialog}")
+            }
             onStop()
         }
 
@@ -568,7 +571,7 @@ open class FDialog(activity: Activity) : IDialog {
         if (!_isCreated) {
             _isCreated = true
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "notifyCreate ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "notify onCreate ${this@FDialog}")
             }
             onCreate()
         }
