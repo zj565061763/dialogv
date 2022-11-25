@@ -815,9 +815,6 @@ open class FDialog(activity: Activity) : IDialog {
 
         override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
             super.onLayout(changed, l, t, r, b)
-            if (changed) {
-                Utils.checkMatchLayoutParams(this)
-            }
             startShowAnimator()
         }
 
@@ -830,16 +827,9 @@ open class FDialog(activity: Activity) : IDialog {
         }
     }
 
-    private inner class InternalBackgroundView(context: Context) : View(context) {
+    private class InternalBackgroundView(context: Context) : View(context) {
         init {
             setBackgroundColor(Color.TRANSPARENT)
-        }
-
-        override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-            super.onLayout(changed, l, t, r, b)
-            if (changed) {
-                Utils.checkMatchLayoutParams(this)
-            }
         }
     }
 

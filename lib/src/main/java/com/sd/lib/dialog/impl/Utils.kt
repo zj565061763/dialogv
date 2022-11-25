@@ -32,22 +32,4 @@ internal object Utils {
             false
         } else x >= view.left && x < view.right && y >= view.top && y < view.bottom
     }
-
-    @JvmStatic
-    fun checkMatchLayoutParams(view: View) {
-        val params = view.layoutParams as FrameLayout.LayoutParams
-        if (params.width != ViewGroup.LayoutParams.MATCH_PARENT ||
-            params.height != ViewGroup.LayoutParams.MATCH_PARENT
-        ) {
-            throw RuntimeException("can not change view's width or height")
-        }
-
-        if (params.leftMargin != 0 ||
-            params.rightMargin != 0 ||
-            params.topMargin != 0 ||
-            params.bottomMargin != 0
-        ) {
-            throw RuntimeException("can not set margin to view")
-        }
-    }
 }
