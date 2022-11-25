@@ -49,10 +49,11 @@ open class FDialog(activity: Activity) : IDialog {
         }
     }
 
+    private var _isCover = false
     private var _isAnimatorCreatorModifiedInternal = false
 
     private var _isCreated = false
-    private var _isCover = false
+    private var _isStarted = false
     private var _isCanceled = false
 
     private var _onDismissListener: IDialog.OnDismissListener? = null
@@ -513,6 +514,7 @@ open class FDialog(activity: Activity) : IDialog {
             return
         }
 
+        _isStarted = true
         onStart()
         if (_state.isDismissPart) {
             if (isDebug) {
