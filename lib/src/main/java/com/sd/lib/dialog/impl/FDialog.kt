@@ -286,6 +286,7 @@ open class FDialog : IDialog {
                         _onDismissListener?.onDismiss(this@FDialog)
                     }
                 }
+                else -> {}
             }
         }
     }
