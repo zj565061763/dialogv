@@ -500,12 +500,27 @@ open class FDialog(activity: Activity) : IDialog {
         if (isDebug) {
             Log.e(IDialog::class.java.simpleName, "showDialog state:$_state ${this@FDialog}")
         }
+        if (_state == State.Shown) return
 
         _activityLifecycleCallbacks.register(true)
         FDialogHolder.addDialog(this@FDialog)
 
         notifyCreate()
+        if (_state.isDismissPart) {
+            if (isDebug) {
+                Log.e(IDialog::class.java.simpleName, "state changed when notify onCreate state:$_state ${this@FDialog}")
+            }
+            return
+        }
+
         onStart()
+        if (_state.isDismissPart) {
+            if (isDebug) {
+                Log.e(IDialog::class.java.simpleName, "state changed when notify onStart state:$_state ${this@FDialog}")
+            }
+            return
+        }
+
         _targetDialog?.onStart()
         setDefaultConfigBeforeShow()
 
