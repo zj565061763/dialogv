@@ -758,13 +758,6 @@ open class FDialog(activity: Activity) : IDialog {
                 throw RuntimeException("can not remove dialog child")
             }
         }
-
-        override fun setVisibility(visibility: Int) {
-            if (visibility == GONE || visibility == INVISIBLE) {
-                throw RuntimeException("can not hide dialog")
-            }
-            super.setVisibility(visibility)
-        }
     }
 
     private inner class InternalContainerView(context: Context) : LinearLayout(context) {
