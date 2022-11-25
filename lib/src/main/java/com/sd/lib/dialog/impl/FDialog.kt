@@ -647,12 +647,15 @@ open class FDialog(activity: Activity) : IDialog {
                 }
 
                 if (!this@InternalDialogView.isAttachedToWindow) return
-                if (!hasFocus() && FDialogHolder.getLast(_activity) == this@FDialog) {
-                    if (isDebug) {
-                        Log.i(IDialog::class.java.simpleName, "requestFocus ${this@FDialog}")
+                if (FDialogHolder.getLast(_activity) == this@FDialog) {
+                    if (!hasFocus()) {
+                        if (isDebug) {
+                            Log.i(IDialog::class.java.simpleName, "requestFocus ${this@FDialog}")
+                        }
+                        requestChildFocus(containerView, containerView)
                     }
-                    requestChildFocus(containerView, containerView)
                 }
+
                 postDelayed(this, 1000L)
             }
         }
