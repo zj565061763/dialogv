@@ -196,12 +196,8 @@ open class FDialog(activity: Activity) : IDialog {
         }
 
         if (isFinishing) {
-            if (_animatorHandler.isShowAnimatorStarted) {
-                _animatorHandler.cancelShowAnimator()
-            }
-            if (_animatorHandler.isHideAnimatorStarted) {
-                _animatorHandler.cancelHideAnimator()
-            }
+            _animatorHandler.cancelShowAnimator()
+            _animatorHandler.cancelHideAnimator()
             setLockDialog(true)
             dismissDialog(false)
             return@Runnable
