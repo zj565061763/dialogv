@@ -509,7 +509,7 @@ open class FDialog(activity: Activity) : IDialog {
         notifyCreate()
         if (_state.isDismissPart) {
             if (isDebug) {
-                Log.e(IDialog::class.java.simpleName, "state changed when notify onCreate state:$_state ${this@FDialog}")
+                Log.e(IDialog::class.java.simpleName, "showDialog state changed to $_state when notify onCreate ${this@FDialog}")
             }
             return
         }
