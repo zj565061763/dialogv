@@ -509,7 +509,7 @@ open class FDialog(activity: Activity) : IDialog {
         notifyCreate()
         if (_state.isDismissPart) {
             if (isDebug) {
-                Log.e(IDialog::class.java.simpleName, "showDialog state changed to $_state when notify onCreate ${this@FDialog}")
+                Log.e(IDialog::class.java.simpleName, "showDialog canceled state changed to $_state when notify onCreate ${this@FDialog}")
             }
             return
         }
@@ -521,7 +521,7 @@ open class FDialog(activity: Activity) : IDialog {
         onStart()
         if (_state.isDismissPart) {
             if (isDebug) {
-                Log.e(IDialog::class.java.simpleName, "showDialog state changed to $_state when notify onStart ${this@FDialog}")
+                Log.e(IDialog::class.java.simpleName, "showDialog canceled state changed to $_state when notify onStart ${this@FDialog}")
             }
             return
         }
