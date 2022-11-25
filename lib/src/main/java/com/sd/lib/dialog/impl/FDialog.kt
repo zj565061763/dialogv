@@ -33,7 +33,14 @@ open class FDialog(activity: Activity) : IDialog {
     private var _cancelable = true
     private var _canceledOnTouchOutside = true
 
-    private var _lockDialog = false
+    private var _lockDialog by Delegates.observable(false) { _, oldValue, newValue ->
+        if (oldValue != newValue) {
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "lock dialog $newValue ${this@FDialog}")
+            }
+        }
+    }
+
     private var _showAnimatorFlag = false
     private var _isAnimatorCreatorModifiedInternal = false
 
@@ -198,7 +205,7 @@ open class FDialog(activity: Activity) : IDialog {
         if (isFinishing) {
             _animatorHandler.cancelShowAnimator()
             _animatorHandler.cancelHideAnimator()
-            setLockDialog(true)
+            _lockDialog = true
             dismissDialog(false)
             return@Runnable
         }
@@ -215,7 +222,7 @@ open class FDialog(activity: Activity) : IDialog {
             _animatorHandler.cancelShowAnimator()
         }
 
-        setLockDialog(true)
+        _lockDialog = true
         _animatorHandler.setHideAnimator(createAnimator(false))
         if (_animatorHandler.startHideAnimator()) {
             // 等待动画结束后让窗口消失
@@ -253,15 +260,6 @@ open class FDialog(activity: Activity) : IDialog {
                     }
                 }
                 else -> {}
-            }
-        }
-    }
-
-    private fun setLockDialog(lock: Boolean) {
-        if (_lockDialog != lock) {
-            _lockDialog = lock
-            if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "setLockDialog:${lock} ${this@FDialog}")
             }
         }
     }
@@ -549,7 +547,7 @@ open class FDialog(activity: Activity) : IDialog {
         onStart()
         _targetDialog?.onStart()
 
-        setLockDialog(false)
+        _lockDialog = false
         setDefaultConfigBeforeShow()
     }
 
