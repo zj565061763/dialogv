@@ -245,6 +245,7 @@ open class FDialog(activity: Activity) : IDialog {
             }
 
             if (state.isDismissPart) {
+                stopDismissRunnable()
                 _showAnimatorFlag = false
                 _lockDialog = true
             }
@@ -528,8 +529,6 @@ open class FDialog(activity: Activity) : IDialog {
         if (isDebug) {
             Log.e(IDialog::class.java.simpleName, "dismissDialog state:$_state isAnimator:${isAnimator} ${this@FDialog}")
         }
-
-        stopDismissRunnable()
 
         display.dismissDialog(_dialogView)
         notifyStop()
