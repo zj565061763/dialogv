@@ -222,7 +222,6 @@ open class FDialog(activity: Activity) : IDialog {
             return@Runnable
         }
 
-        setState(State.TryDismiss)
         if (_animatorHandler.isShowAnimatorStarted) {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "cancel show animator before dismiss ${this@FDialog}")
@@ -230,6 +229,7 @@ open class FDialog(activity: Activity) : IDialog {
             _animatorHandler.cancelShowAnimator()
         }
 
+        setState(State.TryDismiss)
         _animatorHandler.setHideAnimator(createAnimator(false))
         if (_animatorHandler.startHideAnimator()) {
             // 等待动画结束后让窗口消失
