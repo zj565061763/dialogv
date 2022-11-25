@@ -503,6 +503,9 @@ open class FDialog(activity: Activity) : IDialog {
 
         if (!_isCreated) {
             _isCreated = true
+            if (isDebug) {
+                Log.i(IDialog::class.java.simpleName, "onCreate ${this@FDialog}")
+            }
             onCreate()
         }
 
