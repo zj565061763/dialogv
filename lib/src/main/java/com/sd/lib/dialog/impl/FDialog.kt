@@ -535,11 +535,23 @@ open class FDialog(activity: Activity) : IDialog {
             Log.e(IDialog::class.java.simpleName, "dismissDialog state:$_state isAnimator:${isAnimator} ${this@FDialog}")
         }
 
+        _activityLifecycleCallbacks.register(false)
+        FDialogHolder.removeDialog(this@FDialog)
+
         if (_dialogView.isAttachedToWindow) {
             display.dismissDialog(_dialogView)
         }
 
-        notifyStop()
+        if (_isStarted) {
+            _isStarted = false
+            onStop()
+        }
+
+        _targetDialog?.onStop()
+        if (_isAnimatorCreatorModifiedInternal) {
+            animatorCreator = null
+        }
+
         setState(State.Dismissed)
     }
 
@@ -550,22 +562,6 @@ open class FDialog(activity: Activity) : IDialog {
                 Log.i(IDialog::class.java.simpleName, "notifyCreate ${this@FDialog}")
             }
             onCreate()
-        }
-    }
-
-    private fun notifyStop() {
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyStop ${this@FDialog}")
-        }
-
-        _activityLifecycleCallbacks.register(false)
-        FDialogHolder.removeDialog(this@FDialog)
-
-        onStop()
-        _targetDialog?.onStop()
-
-        if (_isAnimatorCreatorModifiedInternal) {
-            animatorCreator = null
         }
     }
 
