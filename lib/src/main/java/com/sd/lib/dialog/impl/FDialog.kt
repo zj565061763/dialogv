@@ -123,14 +123,8 @@ open class FDialog(activity: Activity) : IDialog {
         _dialogView.containerView.gravity = newValue
     }
 
-    override var isBackgroundDim: Boolean = true
-        set(value) {
-            field = value
-            updateBackgroundDim()
-        }
-
-    private fun updateBackgroundDim() {
-        if (isBackgroundDim) {
+    final override var isBackgroundDim: Boolean by Delegates.observable(false) { _, _, newValue ->
+        if (newValue) {
             val color = context.resources.getColor(R.color.lib_dialogv_background_dim)
             _dialogView.backgroundView.setBackgroundColor(color)
         } else {
@@ -841,7 +835,7 @@ open class FDialog(activity: Activity) : IDialog {
 
     init {
         gravity = Gravity.CENTER
-        updateBackgroundDim()
+        isBackgroundDim = true
     }
 
     companion object {
