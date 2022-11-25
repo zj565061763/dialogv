@@ -69,6 +69,7 @@ open class FDialog(activity: Activity) : IDialog {
         if (old === view) return
 
         _contentView = view
+
         if (old != null) {
             _dialogView.containerView.removeView(old)
         }
