@@ -526,7 +526,7 @@ open class FDialog(activity: Activity) : IDialog {
 
     private fun dismissDialog(isAnimator: Boolean) {
         if (isDebug) {
-            Log.e(IDialog::class.java.simpleName, "dismissDialog by animator:${isAnimator} ${this@FDialog}")
+            Log.e(IDialog::class.java.simpleName, "dismissDialog state:$_state isAnimator:${isAnimator} ${this@FDialog}")
         }
 
         stopDismissRunnable()
