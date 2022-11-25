@@ -572,17 +572,14 @@ open class FDialog(activity: Activity) : IDialog {
     }
 
     private inner class InternalDialogView(context: Context) : FrameLayout(context) {
-        val backgroundView: View
-        val containerView: LinearLayout
+        val backgroundView: View = View(context)
+        val containerView: LinearLayout = InternalContainerView(context)
 
         init {
-            backgroundView = View(context)
             addView(
                 backgroundView,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
-
-            containerView = InternalContainerView(context)
             addView(
                 containerView,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
