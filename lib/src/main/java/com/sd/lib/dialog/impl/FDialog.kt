@@ -883,7 +883,6 @@ private fun isViewUnder(view: View?, x: Int, y: Int): Boolean {
 private object FDialogHolder {
     private val dialogHolder: MutableMap<Activity, MutableList<FDialog>> = hashMapOf()
 
-    @JvmStatic
     fun addDialog(dialog: FDialog) {
         val activity = dialog.ownerActivity
         val holder = dialogHolder[activity] ?: mutableListOf<FDialog>().also {
@@ -894,7 +893,6 @@ private object FDialogHolder {
         holder.add(dialog)
     }
 
-    @JvmStatic
     fun removeDialog(dialog: FDialog) {
         val activity = dialog.ownerActivity
         val holder = dialogHolder[activity] ?: return
@@ -909,19 +907,16 @@ private object FDialogHolder {
         }
     }
 
-    @JvmStatic
     fun get(activity: Activity): List<FDialog>? {
         val holder = dialogHolder[activity] ?: return null
         return holder.toMutableList()
     }
 
-    @JvmStatic
     fun getLast(activity: Activity): FDialog? {
         val holder = dialogHolder[activity] ?: return null
         return holder.lastOrNull()
     }
 
-    @JvmStatic
     fun remove(activity: Activity) {
         dialogHolder.remove(activity)
     }
