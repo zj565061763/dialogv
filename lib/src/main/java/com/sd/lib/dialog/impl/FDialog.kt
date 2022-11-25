@@ -7,7 +7,6 @@ import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -617,7 +616,7 @@ open class FDialog(activity: Activity) : IDialog {
         val containerView: LinearLayout
 
         init {
-            backgroundView = InternalBackgroundView(context)
+            backgroundView = View(context)
             addView(
                 backgroundView,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -824,12 +823,6 @@ open class FDialog(activity: Activity) : IDialog {
                 setTryStartShowAnimator(true)
                 startShowAnimator()
             }
-        }
-    }
-
-    private class InternalBackgroundView(context: Context) : View(context) {
-        init {
-            setBackgroundColor(Color.TRANSPARENT)
         }
     }
 
