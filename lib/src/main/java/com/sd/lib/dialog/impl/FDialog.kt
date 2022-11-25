@@ -720,7 +720,6 @@ open class FDialog(activity: Activity) : IDialog {
     }
 
     private inner class InternalContainerView(context: Context) : LinearLayout(context) {
-
         override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
             val finalLeft = if (left < 0) paddingLeft else left
             val finalTop = if (top < 0) paddingTop else top
@@ -779,19 +778,19 @@ open class FDialog(activity: Activity) : IDialog {
                 Log.i(IDialog::class.java.simpleName, "container onDetachedFromWindow state:$_state ${this@FDialog}")
             }
         }
-    }
 
-    private fun startShowAnimator() {
-        if (_showAnimatorFlag) {
-            val width = containerView.width
-            val height = containerView.height
-            if (width > 0 && height > 0) {
-                if (isDebug) {
-                    Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height} ${this@FDialog}")
+        private fun startShowAnimator() {
+            if (_showAnimatorFlag) {
+                val width = containerView.width
+                val height = containerView.height
+                if (width > 0 && height > 0) {
+                    if (isDebug) {
+                        Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height} ${this@FDialog}")
+                    }
+                    _showAnimatorFlag = false
+                    _animatorHandler.setShowAnimator(createAnimator(true))
+                    _animatorHandler.startShowAnimator()
                 }
-                _showAnimatorFlag = false
-                _animatorHandler.setShowAnimator(createAnimator(true))
-                _animatorHandler.startShowAnimator()
             }
         }
     }
