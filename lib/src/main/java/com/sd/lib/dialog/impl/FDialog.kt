@@ -787,7 +787,7 @@ open class FDialog(activity: Activity) : IDialog {
         override fun onViewAdded(child: View) {
             super.onViewAdded(child)
             if (child !== _contentView) {
-                throw RuntimeException("can not add view to container")
+                error("Can not add view to container.")
             }
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "onContentViewAdded:${child} ${this@FDialog}")
