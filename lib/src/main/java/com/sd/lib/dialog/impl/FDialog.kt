@@ -19,6 +19,7 @@ import com.sd.lib.dialog.ITargetDialog
 import com.sd.lib.dialog.R
 import com.sd.lib.dialog.animator.*
 import com.sd.lib.dialog.display.ActivityDisplay
+import kotlin.properties.Delegates
 
 open class FDialog(activity: Activity) : IDialog {
     private val _activity = activity
@@ -112,29 +113,21 @@ open class FDialog(activity: Activity) : IDialog {
         _onCancelListener = listener
     }
 
-    override var animatorCreator: AnimatorCreator? = null
-        set(value) {
-            field = value
-            _isAnimatorCreatorModifiedInternal = false
-        }
-
     override var animatorDuration: Long = 0
 
-    override var gravity: Int = Gravity.CENTER
-        set(value) {
-            field = value
-            updateGravity()
-        }
+    final override var animatorCreator: AnimatorCreator? by Delegates.observable(null) { _, _, _ ->
+        _isAnimatorCreatorModifiedInternal = false
+    }
+
+    final override var gravity: Int by Delegates.observable(Gravity.NO_GRAVITY) { _, _, newValue ->
+        _dialogView.containerView.gravity = newValue
+    }
 
     override var isBackgroundDim: Boolean = true
         set(value) {
             field = value
             updateBackgroundDim()
         }
-
-    private fun updateGravity() {
-        _dialogView.containerView.gravity = gravity
-    }
 
     private fun updateBackgroundDim() {
         if (isBackgroundDim) {
@@ -847,7 +840,7 @@ open class FDialog(activity: Activity) : IDialog {
     }
 
     init {
-        updateGravity()
+        gravity = Gravity.CENTER
         updateBackgroundDim()
     }
 

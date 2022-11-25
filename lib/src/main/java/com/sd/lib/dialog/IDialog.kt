@@ -22,14 +22,14 @@ interface IDialog {
     val ownerActivity: Activity
 
     /**
-     * [AnimatorCreator]
-     */
-    var animatorCreator: AnimatorCreator?
-
-    /**
      * 动画时长
      */
     var animatorDuration: Long
+
+    /**
+     * [AnimatorCreator]
+     */
+    var animatorCreator: AnimatorCreator?
 
     /**
      * 重力属性，默认[android.view.Gravity.CENTER]
