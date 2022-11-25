@@ -497,10 +497,10 @@ open class FDialog(activity: Activity) : IDialog {
     }
 
     private fun showDialog() {
+        check(_state == State.TryShow) { "Illegal state $_state" }
         if (isDebug) {
-            Log.e(IDialog::class.java.simpleName, "showDialog state:$_state ${this@FDialog}")
+            Log.e(IDialog::class.java.simpleName, "showDialog ${this@FDialog}")
         }
-        if (_state == State.Shown) return
 
         _activityLifecycleCallbacks.register(true)
         FDialogHolder.addDialog(this@FDialog)
