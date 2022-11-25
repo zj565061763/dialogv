@@ -784,13 +784,6 @@ open class FDialog(activity: Activity) : IDialog {
             }
         }
 
-        override fun setVisibility(visibility: Int) {
-            if (visibility == GONE || visibility == INVISIBLE) {
-                throw RuntimeException("can not hide container")
-            }
-            super.setVisibility(visibility)
-        }
-
         override fun onViewAdded(child: View) {
             super.onViewAdded(child)
             if (child !== _contentView) {
