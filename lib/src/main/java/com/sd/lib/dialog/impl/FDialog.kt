@@ -535,7 +535,10 @@ open class FDialog(activity: Activity) : IDialog {
             Log.e(IDialog::class.java.simpleName, "dismissDialog state:$_state isAnimator:${isAnimator} ${this@FDialog}")
         }
 
-        display.dismissDialog(_dialogView)
+        if (_dialogView.isAttachedToWindow) {
+            display.dismissDialog(_dialogView)
+        }
+
         notifyStop()
         setState(State.Dismissed)
     }
