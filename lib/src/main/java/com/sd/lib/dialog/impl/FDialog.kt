@@ -390,8 +390,8 @@ open class FDialog(activity: Activity) : IDialog {
         }
 
         val animator = if (animatorContent != null && animatorBackground != null) {
-            val duration = Utils.getAnimatorDuration(animatorContent)
-            if (duration < 0) throw RuntimeException("Illegal duration:${duration}")
+            val duration = getAnimatorDuration(animatorContent)
+            if (duration < 0) error("Illegal duration:${duration}")
             animatorBackground.duration = duration
 
             AnimatorSet().apply {
@@ -879,6 +879,20 @@ private fun isViewUnder(view: View?, x: Int, y: Int): Boolean {
     }
 }
 
+private fun getAnimatorDuration(animator: Animator): Long {
+    var duration = animator.duration
+    if (duration > 0) return duration
+
+    if (animator is AnimatorSet) {
+        for (item in animator.childAnimations) {
+            val itemDuration = getAnimatorDuration(item)
+            if (itemDuration > duration) {
+                duration = itemDuration
+            }
+        }
+    }
+    return duration
+}
 
 private object FDialogHolder {
     private val dialogHolder: MutableMap<Activity, MutableList<FDialog>> = hashMapOf()
