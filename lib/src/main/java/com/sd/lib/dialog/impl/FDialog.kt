@@ -922,8 +922,7 @@ private object FDialogHolder {
     }
 
     fun get(activity: Activity): List<FDialog>? {
-        val holder = dialogHolder[activity] ?: return null
-        return holder.toMutableList()
+        return dialogHolder[activity]?.toList()
     }
 
     fun getLast(activity: Activity): FDialog? {
