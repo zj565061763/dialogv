@@ -498,7 +498,7 @@ open class FDialog(activity: Activity) : IDialog {
 
     private fun showDialog() {
         if (isDebug) {
-            Log.e(IDialog::class.java.simpleName, "showDialog ${this@FDialog}")
+            Log.e(IDialog::class.java.simpleName, "showDialog state:$_state ${this@FDialog}")
         }
 
         if (!_isCreated) {
