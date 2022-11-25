@@ -22,6 +22,11 @@ interface IDialog {
     val ownerActivity: Activity
 
     /**
+     * 窗口显示对象
+     */
+    var display: Display
+
+    /**
      * 动画时长
      */
     var animatorDuration: Long
@@ -40,11 +45,6 @@ interface IDialog {
      * 是否半透明背景，默认true
      */
     var isBackgroundDim: Boolean
-
-    /**
-     * 窗口显示对象
-     */
-    var display: Display
 
     /**
      * 设置上下左右间距，如果某个方向的值小于0，则该方向的padding保持原有的值不变

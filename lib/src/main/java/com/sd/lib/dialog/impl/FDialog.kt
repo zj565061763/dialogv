@@ -69,6 +69,8 @@ open class FDialog(activity: Activity) : IDialog {
 
     override val contentView: View? get() = _contentView
 
+    override var display: IDialog.Display = ActivityDisplay()
+
     override fun setContentView(layoutId: Int) {
         val view = if (layoutId == 0) {
             null
@@ -145,8 +147,6 @@ open class FDialog(activity: Activity) : IDialog {
             backgroundView.setBackgroundColor(0)
         }
     }
-
-    override var display: IDialog.Display = ActivityDisplay()
 
     final override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
         containerView.setPadding(left, top, right, bottom)
