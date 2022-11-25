@@ -501,7 +501,14 @@ open class FDialog(activity: Activity) : IDialog {
             Log.e(IDialog::class.java.simpleName, "showDialog state:$_state ${this@FDialog}")
         }
 
-        notifyStart()
+        _activityLifecycleCallbacks.register(true)
+        FDialogHolder.addDialog(this@FDialog)
+
+        notifyCreate()
+        onStart()
+        _targetDialog?.onStart()
+        setDefaultConfigBeforeShow()
+
         display.showDialog(_dialogView)
         setState(State.Shown)
     }
@@ -524,21 +531,6 @@ open class FDialog(activity: Activity) : IDialog {
             }
             onCreate()
         }
-    }
-
-    private fun notifyStart() {
-        if (isDebug) {
-            Log.i(IDialog::class.java.simpleName, "notifyStart ${this@FDialog}")
-        }
-
-        _activityLifecycleCallbacks.register(true)
-        FDialogHolder.addDialog(this@FDialog)
-
-        notifyCreate()
-        onStart()
-        _targetDialog?.onStart()
-
-        setDefaultConfigBeforeShow()
     }
 
     private fun notifyStop() {
