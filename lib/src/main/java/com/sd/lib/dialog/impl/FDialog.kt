@@ -33,10 +33,10 @@ open class FDialog(activity: Activity) : IDialog {
     private var _cancelable = true
     private var _canceledOnTouchOutside = true
 
-    private var _lockDialog by Delegates.observable(false) { _, oldValue, newValue ->
+    private var _lockTouch by Delegates.observable(false) { _, oldValue, newValue ->
         if (oldValue != newValue) {
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "_lockDialog $newValue ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "_lockTouch $newValue ${this@FDialog}")
             }
         }
     }
@@ -213,7 +213,6 @@ open class FDialog(activity: Activity) : IDialog {
         if (isFinishing) {
             _animatorHandler.cancelShowAnimator()
             _animatorHandler.cancelHideAnimator()
-            _lockDialog = true
             dismissDialog()
             return@Runnable
         }
@@ -248,11 +247,12 @@ open class FDialog(activity: Activity) : IDialog {
             if (state.isDismissPart) {
                 stopDismissRunnable()
                 _showAnimatorFlag = false
-                _lockDialog = true
+                _lockTouch = true
             }
 
             when (state) {
                 State.Shown -> {
+                    _lockTouch = false
                     _mainHandler.post {
                         _onShowListener?.onShow(this@FDialog)
                     }
@@ -269,21 +269,6 @@ open class FDialog(activity: Activity) : IDialog {
                     }
                 }
                 else -> {}
-            }
-        }
-    }
-
-    private fun startShowAnimator() {
-        if (_showAnimatorFlag) {
-            val width = containerView.width
-            val height = containerView.height
-            if (width > 0 && height > 0) {
-                if (isDebug) {
-                    Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height} ${this@FDialog}")
-                }
-                _showAnimatorFlag = false
-                _animatorHandler.setShowAnimator(createAnimator(true))
-                _animatorHandler.startShowAnimator()
             }
         }
     }
@@ -547,7 +532,6 @@ open class FDialog(activity: Activity) : IDialog {
         onStart()
         _targetDialog?.onStart()
 
-        _lockDialog = false
         setDefaultConfigBeforeShow()
     }
 
@@ -667,7 +651,7 @@ open class FDialog(activity: Activity) : IDialog {
         }
 
         override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-            return if (_lockDialog) {
+            return if (_lockTouch) {
                 true
             } else {
                 super.onInterceptTouchEvent(ev)
@@ -675,7 +659,7 @@ open class FDialog(activity: Activity) : IDialog {
         }
 
         override fun onTouchEvent(event: MotionEvent): Boolean {
-            if (_lockDialog) {
+            if (_lockTouch) {
                 return true
             }
 
@@ -692,7 +676,7 @@ open class FDialog(activity: Activity) : IDialog {
                 }
             }
 
-            if (_lockDialog) {
+            if (_lockTouch) {
                 return true
             }
 
@@ -793,6 +777,21 @@ open class FDialog(activity: Activity) : IDialog {
             super.onDetachedFromWindow()
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "container onDetachedFromWindow state:$_state ${this@FDialog}")
+            }
+        }
+    }
+
+    private fun startShowAnimator() {
+        if (_showAnimatorFlag) {
+            val width = containerView.width
+            val height = containerView.height
+            if (width > 0 && height > 0) {
+                if (isDebug) {
+                    Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height} ${this@FDialog}")
+                }
+                _showAnimatorFlag = false
+                _animatorHandler.setShowAnimator(createAnimator(true))
+                _animatorHandler.startShowAnimator()
             }
         }
     }
