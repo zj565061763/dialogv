@@ -2,9 +2,6 @@ package com.sd.lib.dialog.impl
 
 import android.animation.Animator
 import android.animation.AnimatorSet
-import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
 
 internal object Utils {
     @JvmStatic
@@ -24,12 +21,5 @@ internal object Utils {
             }
         }
         return duration
-    }
-
-    @JvmStatic
-    fun isViewUnder(view: View?, x: Int, y: Int): Boolean {
-        return if (view == null) {
-            false
-        } else x >= view.left && x < view.right && y >= view.top && y < view.bottom
     }
 }

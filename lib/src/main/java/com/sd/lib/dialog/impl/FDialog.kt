@@ -707,7 +707,7 @@ open class FDialog(activity: Activity) : IDialog {
                 return true
             }
 
-            val isTouchOutside = !Utils.isViewUnder(_contentView, event.x.toInt(), event.y.toInt())
+            val isTouchOutside = !isViewUnder(_contentView, event.x.toInt(), event.y.toInt())
             if (event.action == MotionEvent.ACTION_DOWN) {
                 if (isTouchOutside) {
                     if (_cancelable && _canceledOnTouchOutside) {
@@ -889,4 +889,12 @@ private enum class State {
 
     val isDismissPart: Boolean
         get() = this == Dismissed || this == TryDismiss
+}
+
+private fun isViewUnder(view: View?, x: Int, y: Int): Boolean {
+    return if (view == null) {
+        false
+    } else {
+        x >= view.left && x < view.right && y >= view.top && y < view.bottom
+    }
 }
