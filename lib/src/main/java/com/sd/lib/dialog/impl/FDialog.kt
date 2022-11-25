@@ -33,7 +33,7 @@ open class FDialog(activity: Activity) : IDialog {
     private var _canceledOnTouchOutside = true
 
     private var _lockDialog = false
-    private var _tryStartShowAnimator = false
+    private var _showAnimatorFlag = false
     private var _isAnimatorCreatorModifiedInternal = false
 
     private var _isCreated = false
@@ -254,7 +254,7 @@ open class FDialog(activity: Activity) : IDialog {
             }
 
             if (state.isDismissPart) {
-                setTryStartShowAnimator(false)
+                setShowAnimatorFlag(false)
             }
 
             when (state) {
@@ -288,24 +288,24 @@ open class FDialog(activity: Activity) : IDialog {
         }
     }
 
-    private fun setTryStartShowAnimator(tryShow: Boolean) {
-        if (_tryStartShowAnimator != tryShow) {
-            _tryStartShowAnimator = tryShow
+    private fun setShowAnimatorFlag(flag: Boolean) {
+        if (_showAnimatorFlag != flag) {
+            _showAnimatorFlag = flag
             if (isDebug) {
-                Log.i(IDialog::class.java.simpleName, "setTryStartShowAnimator:${tryShow} ${this@FDialog}")
+                Log.i(IDialog::class.java.simpleName, "setShowAnimatorFlag:${flag} ${this@FDialog}")
             }
         }
     }
 
     private fun startShowAnimator() {
-        if (_tryStartShowAnimator) {
+        if (_showAnimatorFlag) {
             val width = _dialogView.containerView.width
             val height = _dialogView.containerView.height
             if (width > 0 && height > 0) {
                 if (isDebug) {
                     Log.i(IDialog::class.java.simpleName, "startShowAnimator width:${width} height:${height} ${this@FDialog}")
                 }
-                setTryStartShowAnimator(false)
+                setShowAnimatorFlag(false)
                 _animatorHandler.setShowAnimator(createAnimator(true))
                 _animatorHandler.startShowAnimator()
             }
@@ -813,7 +813,7 @@ open class FDialog(activity: Activity) : IDialog {
         override fun onAttachedToWindow() {
             super.onAttachedToWindow()
             if (_state.isShowPart) {
-                setTryStartShowAnimator(true)
+                setShowAnimatorFlag(true)
                 startShowAnimator()
             }
         }
