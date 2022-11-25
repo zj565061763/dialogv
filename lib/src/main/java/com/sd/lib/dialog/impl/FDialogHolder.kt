@@ -8,11 +8,8 @@ internal object FDialogHolder {
     @JvmStatic
     fun addDialog(dialog: FDialog) {
         val activity = dialog.ownerActivity
-
-        var holder = dialogHolder[activity]
-        if (holder == null) {
-            holder = mutableListOf()
-            dialogHolder[activity] = holder
+        val holder = dialogHolder[activity] ?: mutableListOf<FDialog>().also {
+            dialogHolder[activity] = it
         }
 
         holder.lastOrNull()?.notifyCover()
