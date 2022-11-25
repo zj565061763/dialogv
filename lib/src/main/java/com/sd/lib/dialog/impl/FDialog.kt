@@ -193,13 +193,14 @@ open class FDialog(activity: Activity) : IDialog {
             Log.i(IDialog::class.java.simpleName, "+++++ try show state:$_state ${this@FDialog}")
         }
 
-        setState(State.TryShow)
         if (_animatorHandler.isHideAnimatorStarted) {
             if (isDebug) {
                 Log.i(IDialog::class.java.simpleName, "cancel HideAnimator before show ${this@FDialog}")
             }
             _animatorHandler.cancelHideAnimator()
         }
+
+        setState(State.TryShow)
         showDialog()
     }
 
